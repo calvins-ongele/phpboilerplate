@@ -100,12 +100,12 @@ class Dashboard extends Controller {
  
     public function blog($action = '', $id = null) { 
 	    
-        if ($this->view->_company['user_can_blog'] != 1) {
+        if ($this->view->_settings['user_can_blog'] != 1) {
             die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'));
         }
         
-        if ( ($this->view->_me['user_role'] != 'Admin') && ($this->view->_company()['user_can_blog'] != 1) ) {
-          die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'.($this->view->_company()['user_can_blog'] != 1) ));
+        if ( ($this->view->_me['user_role'] != 'Admin') && ($this->view->_settings()['user_can_blog'] != 1) ) {
+          die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'.($this->view->_settings()['user_can_blog'] != 1) ));
         }
          
         
