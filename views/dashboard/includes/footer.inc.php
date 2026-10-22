@@ -10,7 +10,7 @@
 <script src="/assets/js/jquery.overlayScrollbars.min.js"></script>
 <script src="/assets/js/adminlte.min.js"></script>
 <script src='/assets/js/dashb.js?v=<?php echo rand() ?>'></script>
-<?php  if ($this->_settings['sessions_last'] == 'True') { ?>
+<?php  if ($this->_settings['sessions_last'] == 1) { ?>
 <script>
     setInterval(function() {
        _data(new FormData(), 'session_last_longer');  
