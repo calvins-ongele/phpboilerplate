@@ -1,4 +1,6 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 #[AllowDynamicProperties]
 class Model extends Database {
 
@@ -247,7 +249,7 @@ class Model extends Database {
         $content = $this->_get('contents ', '',[], true )[1];
         $output = [];
         foreach ($content as $row) {
-            $body = str_replace('[c_name]', $this->_settings()['c_name'], $row['cont_body']);
+            $body = str_replace('[site_name]', $this->_settings()['site_name'], $row['cont_body']);
            $output[$row['cont_given_id']] = ['body'=> $body, 'edit'=>$row['cont_body'], 
            'title'=>$row['cont_title'], 'image_name'=>$row['cont_img']  
            ];
@@ -327,6 +329,237 @@ class Model extends Database {
 
     
 
+
+	
+	/*********************************************
+	 * 
+	 * EMAIL SENDER FUNCTIONS
+	 * 
+	 ********************************************/
+	
+	protected function sendTheEmail(string $title, string $recipient, string $body, string $orignalMsgId = '', $admin = false) {
+		// 
+		
+		file_put_contents("logs/Model.EmailByResend.log", "string $title, string $recipient, string $body, string $orignalMsgId". "\n", FILE_APPEND);
+
+		if (!CustomFunctions::validEmail($recipient )) { return; }
+		$search = ['{{title}}', '{{body}}', '{{year}}', '{{sitename}}'];
+		$replace = [$title, $body, date('Y'), "<a href='#//{$_SERVER['SERVER_NAME']}'>{$this->_settings()['site_name']}</a>" ];
+		$finalBody = str_replace($search, $replace, CustomFunctions::mainTemplate());
+
+		if ($admin) {
+			$this->PhpMailerConstruct($recipient, $title, $finalBody, $orignalMsgId );
+			return;
+		}
+
+		try { 
+			 
+			if (!$this->EmailByResend( $recipient, $title, $finalBody, $orignalMsgId ) ) {
+				//use sendmail if resend did not work...
+				$this->PhpMailerConstruct($recipient, $title, $finalBody, $orignalMsgId );
+			}
+			 
+		} catch(Exception $e) {
+			//try again
+			file_put_contents("logs/Model.sendthemail.log", "$e \n", FILE_APPEND);
+			try {$this->PhpMailerConstruct($recipient, $title, $finalBody, $orignalMsgId );} catch(Exception $d){}
+		}
+
+		//the rest
+
+	}
+
+	
+	public function PhpMailerConstruct(mixed $email, string $subject, mixed $body, string $orignalMsgId = '', $filename = '') {
+		    
+        $body1 = [];
+        if (!is_array($email)) $email = [$email];
+        
+        if (!is_array($body)) { 
+            for ($j = 0; $j < count($email); $j++)  $body1[] = $body;
+        } else $body1 = $body;
+            
+        $messages = []; 
+        $i = 0;
+        foreach ($email as $rowemail) {     
+    	    $messages[] = $body1[$i];
+    	    $i++;
+        } 
+
+		$this->ActualSendPHPMailer($email, $subject, $messages, $orignalMsgId, $filename);
+	}
+
+	
+protected function EmailByResend(
+    string $recipient,
+    string $title,
+    string $finalBody,
+    string $orignalMsgId = ''
+) {
+    try {
+        $resend  = Resend::client(RESEND_API_KEY);
+        $settings = $this->_settings();
+ 
+
+		$emails = explode(',', $recipient);
+		$to = array_shift($emails); // First email is the main recipient
+
+        $payload = [
+            'from'    => "{$settings['short_name']} <{$settings['send_from']}>",
+            'to'      => $to,
+			'bcc'     => $emails,
+            'subject' => $title,
+            'text'    => strip_tags($finalBody),
+            'html'    => $finalBody,
+        ]; 
+
+        if (!empty($orignalMsgId)) {
+            $payload['headers'] = [
+                'In-Reply-To' => $orignalMsgId,
+                'References'  => $orignalMsgId,
+            ];
+        }
+		
+        $rawFeed = $resend->emails->send($payload);
+
+        file_put_contents(
+            "logs/Model.EmailByResend.log",
+            "RESPONSE CLASS: " . get_class($rawFeed) . "\n" .
+            "RESPONSE:\n" . print_r($rawFeed, true) . "\n",
+            FILE_APPEND
+        );
+
+        /*
+         * Resend successfully accepted the email.
+         */
+
+        // SDK response exposes id directly
+        if (is_object($rawFeed) && !empty($rawFeed->id)) {
+            return true;
+        }
+
+        // Some SDK versions expose the response through toArray()
+        if (is_object($rawFeed) && method_exists($rawFeed, 'toArray')) {
+            $data = $rawFeed->toArray();
+
+            if (!empty($data['id'])) {
+                return true;
+            }
+
+            // Some response wrappers may contain data
+            if (!empty($data['data']['id'])) {
+                return true;
+            }
+        }
+
+        // Array response
+        if (is_array($rawFeed)) {
+            if (!empty($rawFeed['id'])) {
+                return true;
+            }
+
+            if (!empty($rawFeed['data']['id'])) {
+                return true;
+            }
+        }
+
+        file_put_contents(
+            "logs/Model.EmailByResend.log",
+            "RESEND RESPONSE DID NOT CONTAIN A RECOGNIZED ID\n",
+            FILE_APPEND
+        );
+
+        return false;
+
+    } catch (Throwable $e) {
+
+        file_put_contents(
+            "logs/Model.EmailByResend.log",
+            "RESEND ERROR: " .
+            $e->getMessage() . "\n" .
+            $e->getTraceAsString() . "\n",
+            FILE_APPEND
+        );
+
+        return false;
+    }
+}
+
+	 
+	 
+	
+	/***
+	 * @actual mail send using @PHPMAILER
+	 *  */	  
+	protected function ActualSendPHPMailer(array $email, string $subject, array $message, $orignalMsgId = '', $filename = '') {
+		$settings = $this->_settings();
+        $mail = new PHPMailer(true);   
+  
+        try {  
+            /*******************************************************/ 
+            $mail->isSMTP();
+            //$mail->SMTPDebug = 2; 
+            $mail->Host = $settings['smtp_server'];  
+            $mail->SMTPAuth = true;
+            $mail->Username = $settings['send_from'];  
+            $mail->Password = $settings['send_from_password'];  
+            $mail->Port = $settings['smtp_port']??25;
+            /***************************************************************/
+             
+            //$mail->SMTPKeepAlive = true;
+         
+            $mail->setFrom($settings['send_from'] , $settings['short_name']);  
+            $i = 0;
+            $sentemails = [];
+            foreach ($email as $email_row) { 
+                if (in_array($email_row, $sentemails)) continue;
+                $sentemails[] = $email_row; 
+                $mail->addBCC($email_row); 
+
+				if (!empty($orignalMsgId) ) {
+					$mail->addCustomHeader('In-Reply-To', $orignalMsgId);
+        			$mail->addCustomHeader('References', $orignalMsgId);
+				}
+                  
+                $mail->isHTML(true);                                 
+                $mail->Subject = $subject ?? 'Test from mail auto';
+                $mail->Body    = $message[$i] ?? "<div> Just a test message if working fine </div>";
+                $altbody = $message[$i] ?? 'Alt body';
+                $mail->AltBody = strip_tags($altbody) ;
+
+				if (!empty($filename)) {
+					$mail->AddAttachment("{$_SERVER['DOCUMENT_ROOT']}/public/assets/uploads/{$filename}", $filename); 
+				}
+				
+                if ( !empty($_FILES['file']['name'][0]) ) { 
+                	for ( $j = 0; $j < count($_FILES['file']['name']); $j++ ) { 
+                        $file_tmp  = $_FILES['file']['tmp_name'][$j];
+                        $file_name = $_FILES['file']['name'][$j]; 
+                        $mail->AddAttachment($file_tmp, $file_name);
+                	} 
+                }
+                
+                $status = $mail->send() ? 'success' : 'fail'; 
+               // $this->_insert("email_logs", "recipient, status, message", [$email_row, $status, $mail->ErrorInfo] );
+                $i++;
+				$mail->clearAllRecipients();
+				$mail->clearAttachments();
+            }
+            $mail->SmtpClose();
+             
+        } catch (Exception $e) {
+            file_put_contents('logs/Libraries.SendEmail.php.log', "Message could not be sent. Mailer Error: {$mail->ErrorInfo}",FILE_APPEND);
+           
+        }
+         
+    }
+
+
+	/*********************************************
+	 * X
+	 * EMAIL SENDER FUNCTIONS
+	 * X
+	 ********************************************/
 
 	/////////////////////
 }

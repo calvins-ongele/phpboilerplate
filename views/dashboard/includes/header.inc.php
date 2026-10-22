@@ -12,10 +12,10 @@
 <link rel="stylesheet" href="/assets/css/highlighter.css">
 <link rel="stylesheet" href="/assets/css/adminlte.min.css">
 <link rel="stylesheet" href="/public/static/custom-main.css">
-<link rel="icon"  type="image/*" href="/public/assets/uploads/<?= $this->_company['c_icon'] ?>"/>
+<link rel="icon"  type="image/*" href="/public/assets/uploads/<?= $this->_company['icon'] ?>"/>
  <style>
         :root {
-            --blend: <?= $this->_company['c_primary_color'] ?>;
+            --blend: <?= $this->_company['primary_color'] ?>;
             --second-blend: #0c9c88
         }
         .page-link {

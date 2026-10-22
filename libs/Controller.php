@@ -21,7 +21,7 @@ class Controller {
 			$modelName = $name . '_Model';
 			$this->model = new $modelName();
 		}
-		$this->view->_company = $this->model->_company();  
+		$this->view->_settings = $this->model->_settings();  
 		$this->view->_me = $this->model->me(); 
 		$this->view->version = CODE_VERSION;
 		$this->view->_content = $this->model->_content(); 
@@ -30,8 +30,8 @@ class Controller {
 		$this->view->page_id = '';
 
 		
-		$allowed_under_maintenance = ['admin', 'login'];
-		if ($this->view->_company['enable_maintenance_mode']) {
+		$allowed_under_maintenance = ['admin', 'login', 'account' ];
+		if ($this->view->_settings['enable_maintenance_mode']??0) {
 			if (!in_array(CLASS_NAME, $allowed_under_maintenance)) 
 				die($this->maintenance());
 		}
@@ -41,8 +41,8 @@ class Controller {
 	public function me() {
 		return $this->model->me();
 	}
-	public function _company() {
-		return $this->model->_company();
+	public function _settings() {
+		return $this->model->_settings();
 	}
 	public function _content() {
 		return $this->model->_content();
@@ -70,7 +70,7 @@ class Controller {
 				<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css' rel='stylesheet'  > 
 				</head>
 
-				<body style='background-image:url(/public/assets/system/mainetanance.png);
+				<body style='background-image:url(/public/assets/system/under-maintenance.jpg);
 
 				background-attachment: fixed;
 						/*background-position: center;*/
@@ -82,8 +82,8 @@ class Controller {
 					<h1>We&rsquo;ll be back soon!</h1><br>
 					<div style='font-size:25px'>
 						<p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always 
-						<a href='mailto:{$this->view->_company['c_email']}'>contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
-						<p style='font-size:40px'>&mdash; {$this->view->_company['c_name']}</p>
+						<a href='mailto:{$this->view->_settings['c_email']}'>contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
+						<p style='font-size:40px'>&mdash; {$this->view->_settings['c_name']}</p>
 					</div><br>
 				</article>
 				</div>
@@ -94,7 +94,7 @@ class Controller {
 	public function notFound() {
 		http_response_code(404);
 		$this->view->hstyles = array();
-		$this->view->_company = array('c_name'=>$_SERVER['SERVER_NAME'], 'c_logo'=>'1.png', 'c_tel'=>'07');//$this->_company();
+		$this->view->_settings = array('c_name'=>$_SERVER['SERVER_NAME'], 'c_logo'=>'1.png', 'c_tel'=>'07');//$this->_settings();
 		$this->view->title = '404 Error'; 
 		$this->view->render('err/index', true); 
 	}

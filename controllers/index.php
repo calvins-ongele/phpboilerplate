@@ -11,7 +11,7 @@ class Index extends Controller {
     public function index() {    
 		  $this->view->pid = 'home'; 
           $this->view->latest = $this->model->getblog();    
-		  $this->view->title = $this->_company()['c_name'] ;
+		  $this->view->title = $this->_settings()['site_name'] ;
 		  $this->view->render('index/index' );
     }
     public function search() {

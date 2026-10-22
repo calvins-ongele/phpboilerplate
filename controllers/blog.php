@@ -17,7 +17,7 @@ class Blog extends Controller {
 		  $this->view->title =  $this->view->blog[0]['blog_title']  ;
 		  if ($this->view->blog === false) {
 		      $this->view->render('err/index', true);
-		      retrun;
+		      return;
 		  }
           $this->view->render('blog/read');
 		  return;

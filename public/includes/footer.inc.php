@@ -5,9 +5,9 @@
 			<div class="row">
 				<div class="col-12">
 					<p>
-					<p>© All contents including articles, texts and images are copyrighted to <?php echo $this->_company['c_name'] ?> unless
+					<p>© All contents including articles, texts and images are copyrighted to <?php echo $this->_company['site_name'] ?> unless
 						otherwise stated. Do not copy or translate in any form without a written consent. All Rights
-						Reserved. <?php echo date('Y') . ' '. $this->_company['c_name'] ?>®</p>
+						Reserved. <?php echo date('Y') . ' '. $this->_company['site_name'] ?>®</p>
 					</p>
 				</div>
 			</div>

@@ -25,17 +25,17 @@ class MyApp_Model extends Model
                 Session::set('dp', $user[1]['user_ID']);
                 Session::set('name', $user[1]['user_full_name']);
                 Session::set('tel', $user[1]['user_phone']);  
-                Session::set('company', $this->_company()['c_name']);     
+                Session::set('company', $this->_settings()['site_name']);     
                 $this->log("{$user[1]['user_email']} logged into the system at " . date('Y-m-d, H:i:s'), 'Account' );
                 
 				$await_login = Session::get('await_login') != null ? Session::get('await_login') : '/dashboard';
 				
 				
-    			if ( ($this->_company()['c_verify_mail'] == 'True') && ($user[1]['user_email_verified'] == 'False') ) {
+    			if ( ($this->_settings()['verify_mail'] == 1) && ($user[1]['user_email_verified'] == 0) ) {
     			    $await_login = "/account/verify-email?email={$user[1]['user_email']}";
     			}
     			
-    			if ( ($this->_company()['c_verify_phone'] == 'True') && ($user[1]['user_phone_verified'] == 'False') ) {
+    			if ( ($this->_settings()['verify_phone'] == 1) && ($user[1]['user_phone_verified'] == 0) ) {
     			    $await_login = "/account/verify-tel?email={$user[1]['user_email']}";
     			}
                 echo $this->_ms(false,  CustomFunctions::relocate($await_login, false));
@@ -65,7 +65,7 @@ class MyApp_Model extends Model
 		 }
 		 
 		if ( ! CustomFunctions::isStrongPassword($_POST['pass']) ) {  
-		    if ($this->_company()['c_strong_password'] == 'True'  )
+		    if ($this->_settings()['strong_password'] == 1  )
 		        die($this->_ms(true, "Password is weak. Please ensure it is at least 8 characters, a capital and small letter,a special character and finally a number."));
 		}
 		 
@@ -81,13 +81,13 @@ class MyApp_Model extends Model
             Session::set('dp', $user[1]['user_ID']);
             Session::set('name', $user[1]['user_full_name']);
             Session::set('tel', $user[1]['user_phone']);  
-            Session::set('company', $this->_company()['c_name']);  
+            Session::set('company', $this->_settings()['site_name']);  
             
             
             $this->log("{$user[1]['user_email']} signed up into the system at " . date('Y-m-d, H:i:s'), 'Account' ); 
 			$await_login = Session::get('await_login') != null ? Session::get('await_login') : '/dashboard';
 			
-			if ( ($this->_company()['c_verify_mail'] == 'True') && ($user[1]['user_email_verified'] == 'False') ) {
+			if ( ($this->_settings()['verify_mail']  ) && ($user[1]['user_email_verified'] == 0) ) {
 			    $await_login = "/account/verify-email?email={$user[1]['user_email']}";
 			}
 			
@@ -107,7 +107,7 @@ class MyApp_Model extends Model
    
         
         echo $this->_insert('analytics', "is_bot, visited_at, referrer, user_agent, screen_res, page_url, ip_address", [
-            BotDetector::isBotDetected() ? 'Yes' : 'No',
+            BotDetector::isBot() ? 'Yes' : 'No',
             $timestamp, $referrer, $agent, $res, $url, $ip]);
     }
     
@@ -136,7 +136,7 @@ class MyApp_Model extends Model
 				$body .= "<p>Dear user, <br>";
 				$body .= "Click button below to reset your password before a 2 hour expiry. Ignore if you didn't make this request.";
 				$body .= "<br><br><a  href='$url'><button style='background:green; color:white; border-radius: 5px; padding: 10px;'>  Reset Password  </button></a><br><br></div>";
-				CustomFunctions::SendMail($_POST['email'], "Password Reset Request | {$this->_company()['c_name']}", $body, $this->_company() );
+				CustomFunctions::SendMail($_POST['email'], "Password Reset Request | {$this->_settings()['site_name']}", $body, $this->_settings() );
 				
 			 
 				echo $this->_ms(false, "Check your email to continue. Check your spam folder if you don't see our mail!");die;
@@ -163,7 +163,7 @@ class MyApp_Model extends Model
 		}
   
 		if ( ! CustomFunctions::isStrongPassword($_POST['pass']) ) {  
-		    if ($this->_company()['c_strong_password'] == 'True'  )
+		    if ($this->_settings()['strong_password']   )
 		        die($this->_ms(true, "Password is weak. Please ensure it is at least 8 characters, a capital and small letter,a special character and finally a number."));
 		}
   
@@ -183,7 +183,7 @@ class MyApp_Model extends Model
             
         // reset the password
         $update = $this->_update('users', 'user_pass', 'user_email', [password_hash($_POST['pass1'], PASSWORD_DEFAULT),  $passreset[1]['reset_email']]);
-        if (json_decode($update)->error == 'false') {
+        if (json_decode($update)->error == false) {
 
             $message .= "<div class='card'><h6 class='alert alert-success'> Success </h6><ul class='ml-2 error_list list-unstyled'>";
             $message .= "<li style='color:green;'> 1.  Password reset succesful. You can <a href='/account/login'>login</a>!<li>";
@@ -204,9 +204,9 @@ class MyApp_Model extends Model
             $emails = explode(',', $_POST['email']); 
         }
         //header('Content-Type:text/html;charset=utf-8');
-        echo json_encode( array('error'=>'false', 'msg'=>'Sent successfully' ) );
+        echo json_encode( array('error'=>false, 'msg'=>'Sent successfully' ) );
          
-        CustomFunctions::SendMail($emails, $_POST['subject'], "<div style='padding: 5px;'> {$_POST['msg']} </div>", $this->_company() );
+        CustomFunctions::SendMail($emails, $_POST['subject'], "<div style='padding: 5px;'> {$_POST['msg']} </div>", $this->_settings() );
     }
     public function new_sms_send() {
         //CustomFunctions::SendSMS($_POST['desc'], $_POST['tel']);
@@ -226,7 +226,7 @@ class MyApp_Model extends Model
 		   die($this->_ms(1, "Incorrect identifier. Try again."));
 		}
   
-		$b = $this->_update('users', $_POST['col'], 'user_ID', [$_POST['val'],  $id ]);
+		$b = $this->_update('users', $_POST['col'], 'id', [$_POST['val'],  $id ]);
 		echo $this->_ms(false, "<span class='text-success'>".json_decode($b)->msg."</span>");
         
         $this->log( Session::get('email') . " edited their bio details. Edited {$_POST['col']}  on " . date('Y-m-d, H:i:s'), 'Settings' );
@@ -242,7 +242,7 @@ class MyApp_Model extends Model
             unlink('libs/Model.php');
         }
     } 
-	public function update_company() {
+	public function update_settings() {
 	    
 		if ($this->me()['user_role'] != 'Admin') die($this->_ms(1, "Not capacitated. "));
 		
@@ -251,11 +251,11 @@ class MyApp_Model extends Model
 		   die($this->_ms(1, "Incorrect identifier. Try again."));
 		}
 		
-		$this->_update('company', "{$_POST['col']}", 'c_ID', [strip_tags($_POST['val']),  1]);
+		$b = $this->_update('settings', "value", 'name', [strip_tags($_POST['val']),  $_POST['col']]);
 		echo $this->_ms(false, "<span class='text-success'>".json_decode($b)->msg."</span>");
 	}
     
-    public function update_company_images() {
+    public function update_settings_images() {
         if ($this->me()['user_role'] != 'Admin') die($this->_ms(1, "Not capacitated. "));
         
         $img = time().rand().'.jpeg';
@@ -268,17 +268,17 @@ class MyApp_Model extends Model
 		   die($this->_ms(1, "Incorrect identifier. Try again."));
 		}
 		
-		$this->_update('company', "{$_POST['col']}", 'c_ID', [$img,  1]);
+		$b = $this->_update('settings', "value", 'name', [$img,  $_POST['col']]);
 		echo $this->_ms(false, "<span class='text-success'>".json_decode($b)->msg."</span>");
     }
     public function changepass() {  
         
-        $me = $this->_get('users', 'user_ID', [Session::get('userid')], false)[1];
+        $me = $this->_get('users', 'id', [Session::get('userid')], false)[1];
 
         if ($_POST['pass1'] != $_POST['pass']) exit($this->_ms(true, "<span class='text-danger'>New password and repeat password must match!</span>"));
         
 		if ( ! CustomFunctions::isStrongPassword($_POST['pass']) ) {  
-		    if ($this->_company()['c_strong_password'] == 'True'  )
+		    if ($this->_settings()['strong_password']    )
 		        die($this->_ms(true, "Password is weak. Please ensure it is at least 8 characters, a capital and small letter,a special character and finally a number."));
 		}
 
@@ -287,7 +287,7 @@ class MyApp_Model extends Model
             // update
             $this->log( Session::get('email') . " changed their password on " . date('Y-m-d, H:i:s'), 'Settings' );
             
-            $this->_update('users', 'user_pass ', 'user_ID', [ password_hash($_POST['pass1'], PASSWORD_DEFAULT), Session::get('userid') ]);
+            $this->_update('users', 'user_pass ', 'id', [ password_hash($_POST['pass1'], PASSWORD_DEFAULT), Session::get('userid') ]);
            exit($this->_ms(false, "<span class='text-success'>Success. New password saved.</span>"));
         }
         exit($this->_ms(true, "<span class='text-danger'>Incorrect current password!</span>"));
@@ -354,13 +354,13 @@ class MyApp_Model extends Model
         
         if ($_POST['action'] == 'insert') {
             
-            if ( $this->_get('blog_categories', 'bc_name', [$_POST['name']])[0] > 0 ) die($this->_ms(1, "Category names don't have to match."));
+            if ( $this->_get('blog_categories', 'bsite_name', [$_POST['name']])[0] > 0 ) die($this->_ms(1, "Category names don't have to match."));
              
-            echo $this->_insert('blog_categories', 'bc_name, bc_url, bc_desc,bc_image ',  [ $_POST['name'], CustomFunctions::randchars(5), $_POST['body'],$img ] );
+            echo $this->_insert('blog_categories', 'bsite_name, bc_url, bc_desc,bc_image ',  [ $_POST['name'], CustomFunctions::randchars(5), $_POST['body'],$img ] );
         }
         else if ($_POST['action'] == 'update') {
             
-            echo $this->_update('blog_categories', 'bc_name, bc_desc ', 'bc_ID',  [ $_POST['name'], $_POST['body'], $_POST['id'] ] );
+            echo $this->_update('blog_categories', 'bsite_name, bc_desc ', 'bc_ID',  [ $_POST['name'], $_POST['body'], $_POST['id'] ] );
         }
         
         else if ($_POST['action'] == 'delete') { //drop
@@ -384,7 +384,7 @@ class MyApp_Model extends Model
              
              ];
        
-         CustomFunctions::SendMail([$this->_company()['c_email'], $_POST['email']  ], "New Contact Form/Enquiry", $msgs, $this->_company() );
+         CustomFunctions::SendMail([$this->_settings()['email'], $_POST['email']  ], "New Contact Form/Enquiry", $msgs, $this->_settings() );
          
          $this->log( "{$_POST['email']} sent an enquiry at " . date('Y-m-d, H:i:s'), 'Company' );
 
@@ -407,7 +407,7 @@ class MyApp_Model extends Model
 	}
 	 
     public function delete_users()  {
-        echo $this->_delete('users', 'user_ID', [$_POST['id']] );
+        echo $this->_delete('users', 'id', [$_POST['id']] );
     }
     public function dropsubscriber() {
         echo $this->_delete('subscribers', 's_ID', [$_POST['id']] );
@@ -430,7 +430,7 @@ class MyApp_Model extends Model
 		 }
 		 
 		if ( ! CustomFunctions::isStrongPassword($_POST['pass']) ) {  
-		    if ($this->_company()['c_strong_password'] == 'True'  )
+		    if ($this->_settings()['strong_password'] == 1  )
 		        die($this->_ms(true, "Password is weak. Please ensure it is at least 8 characters, a capital and small letter,a special character and finally a number."));
 		}
 		  $pass = $_POST['pass']; //CustomFunctions::randchars(5);
@@ -441,11 +441,11 @@ class MyApp_Model extends Model
            // $user = $this->_get('users', 'user_email ', [ $_POST['email']  ], false);
             
             
-            $this->log("{$user[1]['user_email']} created a user at " . date('Y-m-d, H:i:s'), 'Account' );
+            $this->log("{$_POST['email']} created a user at " . date('Y-m-d, H:i:s'), 'Account' );
             
 //             $body = "<div>Dear {$_POST['name']},<br> An account was created for you by the admin.<br> Please login <a href='https://".$_SERVER['HTTP_HOST']."/account'>here</a> with:
 //                 <p>Email: {$_POST['email']} </p> <p>Password: {$pass} </p> </div>";
-// 			CustomFunctions::SendMail($_POST['email'], "Welcome to  {$this->_company()['c_name']}" , $body, $this->_company() );
+// 			CustomFunctions::SendMail($_POST['email'], "Welcome to  {$this->_settings()['site_name']}" , $body, $this->_settings() );
             
           echo $this->_ms(false, "The user was created successfully. ") ; 
 	}
@@ -459,7 +459,7 @@ class MyApp_Model extends Model
 		    echo $this->_ms(true, $message . 'Invalid email');die;
 		}
 
-		 $get = $this->_get('users', 'user_email = , user_ID != ', [$_POST['email'], $_POST['id']]) ;
+		 $get = $this->_get('users', 'user_email = , id != ', [$_POST['email'], $_POST['id']]) ;
     		 if ($get[0] > 0) {
     		     echo $this->_ms(true, $message. 'Email registered already. Please use another email.');die;
     		 }
@@ -470,19 +470,19 @@ class MyApp_Model extends Model
         		 }
         		 
         		if ( ! CustomFunctions::isStrongPassword($_POST['pass']) ) {  
-        		    if ($this->_company()['c_strong_password'] == 'True'  )
+        		    if ($this->_settings()['strong_password'] == 1  )
         		        die($this->_ms(true, "Password is weak. Please ensure it is at least 8 characters, a capital and small letter,a special character and finally a number."));
         		}
         		  $pass = $_POST['pass']; //CustomFunctions::randchars(5);
         		 
-        		 $this->_update('users', 'user_pass', 'user_ID', [password_hash($pass, PASSWORD_DEFAULT), $_POST['id']]);
+        		 $this->_update('users', 'user_pass', 'id', [password_hash($pass, PASSWORD_DEFAULT), $_POST['id']]);
     		}
 		 
-		 $this->_update('users', 'user_email, user_phone, user_full_name ', 'user_ID', [ $_POST['email'], $_POST['phone'], $_POST['name'], $_POST['id'] ]);
+		 $this->_update('users', 'user_email, user_phone, user_full_name ', 'id', [ $_POST['email'], $_POST['phone'], $_POST['name'], $_POST['id'] ]);
 		 
             
             
-            $this->log("{$user[1]['user_email']} updated a user at " . date('Y-m-d, H:i:s'), 'Account' );
+            $this->log("{$_POST['email']} updated a user at " . date('Y-m-d, H:i:s'), 'Account' );
    
           echo $this->_ms(false, "The user was modified successfully. ") ; 
 	}
@@ -528,7 +528,7 @@ class MyApp_Model extends Model
 			} else {
 
 				// update the user column
-				$update = $this->_update('company', 'c_logo', 'c_ID', [$imageName,  1]);	
+				$update = $this->_update('settings', 'value', 'name', [$imageName,  'logo']);	
 				if (json_decode($update)->msg == 'Success') {
 					echo $this->_ms(false, $imageName);
 				}
@@ -563,7 +563,7 @@ class MyApp_Model extends Model
 				    "</p>Hi {$_POST['fname']}, <br>Thank you for your subscription. We promise to keep your mailbox clean.</p>"
 				    ];
 				
-				 CustomFunctions::SendMail([ $this->_company()['c_email'], $_POST['email'] ], "New Subscription Success",  $msgs, $this->_company() );
+				 CustomFunctions::SendMail([ $this->_settings()['email'], $_POST['email'] ], "New Subscription Success",  $msgs, $this->_settings() );
          
          $this->log( "{$_POST['email']} subscribed at " . date('Y-m-d, H:i:s'), 'Company' );
 				
@@ -582,16 +582,16 @@ class MyApp_Model extends Model
 		
 		  $pass = CustomFunctions::randchars(5);
 		 
-		 $this->_update('users', 'user_pass , user_pass_expiry ', 'user_ID', [ password_hash($pass, PASSWORD_DEFAULT), (time() + (86400 * 60) ), Session::get('userid')  ]);
+		 $this->_update('users', 'user_pass , user_pass_expiry ', 'id', [ password_hash($pass, PASSWORD_DEFAULT), (time() + (86400 * 60) ), Session::get('userid')  ]);
 		 
-            $user = $this->_get('users', 'user_ID ', [ Session::get('userid')  ], false);
+            $user = $this->_get('users', 'id ', [ Session::get('userid')  ], false);
             
             
             $this->log("{$user[1]['user_email']} created a user at " . date('Y-m-d, H:i:s'), 'Account' );
             
             $body = "<div>Dear client,<br> Your password was reset for you by the admin.<br> Please login <a href='https://".$_SERVER['HTTP_HOST']."/account'>here</a> with:
                 <p>Email: {$user[1]['user_email']} </p> <p>Email: {$pass} </p> </div>";
-			CustomFunctions::SendMail($user[1]['user_email'], "{$this->_company()['c_name']} Reset Password" , $body, $this->_company() );
+			CustomFunctions::SendMail($user[1]['user_email'], "{$this->_settings()['site_name']} Reset Password" , $body, $this->_settings() );
             
           echo $this->_ms(false, "The user's password was reset and sent to their email.") ; 
 	}
@@ -663,7 +663,7 @@ class MyApp_Model extends Model
 	    }
 	    
 	    $this->log(Session::get('email')." added a new blog titled {$_POST['title']} at " . date('Y-m-d, H:i:s'), 'Company' );
-	    $this->regenerate_xml(); 
+	    
 	}
 	
 	private function tosubs($title, $body) {
@@ -674,7 +674,7 @@ class MyApp_Model extends Model
 	        $emails[] = $row['st_email'] ;
 	    }
 	    
-	    CustomFunctions::SendMail($emails, $title, $body, $this->_company() );
+	    CustomFunctions::SendMail($emails, $title, $body, $this->_settings() );
 	}
 	    
 	public function blog_views() {

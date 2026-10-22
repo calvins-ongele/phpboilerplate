@@ -1,0 +1,14 @@
+# Ignore specific files 
+#.env
+
+# Ignore an entire folder (always end with a forward slash)  
+dist/
+.vscode/
+vendor/
+
+# Ignore all files with a specific extension
+*.log
+*.txt
+*.tmp
+*.zip
+*.crdownload

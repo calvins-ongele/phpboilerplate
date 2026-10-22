@@ -10,11 +10,13 @@ define('ROOT', getenv('DOCUMENT_ROOT') . '/');
 define('ADMIN', getenv('DOCUMENT_ROOT') . "/views/{$rui}/");
 define('PROFILE_NAV', "{$rui}" );
 
-define('SERVER', "localhost");
-define('USERNAME', "root");
-define('PASSWORD',"password");
-define('DBNAME', "myblog");
-define('CODE_VERSION', '1.0.0.0');
-define('SYSTEM', "public/assets/system");
-define('UPLOADS', "public/assets/uploads");
+define('SERVER', $_ENV['SERVER']);
+define('USERNAME', $_ENV['USERNAME']);
+define('PASSWORD', $_ENV['PASSWORD']);
+define('DBNAME', $_ENV['DBNAME']);
+define('CODE_VERSION', $_ENV['CODE_VERSION']); 
+define('SYSTEM', $_ENV['SYSTEM']);
+define('UPLOADS', $_ENV['UPLOADS']);
+define("RESEND_API_KEY", $_ENV['RESEND_API_KEY']); 
 define('CLASS_NAME', $rui);
+

@@ -36,8 +36,8 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href='/'  class="brand-link logo-switch">
-                <img src="/public/assets/uploads/<?= $this->_company['c_logo'] ?>" alt="<?= $this->_company['c_name'] ?>" class="brand-image-xl logo-xs">
-                <img src="/public/assets/uploads/<?= $this->_company['c_logo'] ?>" alt="<?= $this->_company['c_name'] ?>" class="brand-image-xs logo-xl" style="left: 12px">
+                <img src="/public/assets/uploads/<?= $this->_company['logo'] ?>" alt="<?= $this->_company['site_name'] ?>" class="brand-image-xl logo-xs">
+                <img src="/public/assets/uploads/<?= $this->_company['logo'] ?>" alt="<?= $this->_company['site_name'] ?>" class="brand-image-xs logo-xl" style="left: 12px">
             </a>
             <div class="sidebar">
                 <div class="form-inline mt-2">
@@ -94,7 +94,7 @@
                             </ul>
                         </li> 
                         <?php } ?>
-                        <?php if ( ($this->_me['user_role'] == 'Admin') || ($this->_company['c_user_can_blog'] == 'True') ) { ?>
+                        <?php if ( ($this->_me['user_role'] == 'Admin') || ($this->_company['user_can_blog'] == 'True') ) { ?>
                         <li class="nav-item ">
                             <a href="products" class="nav-link  <?php echo $pageid=='blog'?'active':'' ?> " >
                                 <i class="nav-icon fas fa-wallet"></i>

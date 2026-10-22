@@ -6,6 +6,49 @@ create table settings(
   name varchar(50),
   value varchar(250)
 );
+--
+-- Dumping data for table `settings`
+--
+
+INSERT INTO `settings` (`id`, `name`, `value`) VALUES
+(1, 'site_name', 'My New Company'),
+(2, 'tel', '0123456789'),
+(3, 'email', 'email@example.com'),
+(4, 'enable_maintenance_mode', '0'), 
+(5, 'enable_dark_mode', '0'), 
+(6, 'admin_email_all_notifications', ''), 
+(7, 'enable_recaptcha', '0'),
+(8, 'recaptcha_site_key', ''),
+(9, 'recaptcha_secret_key', ''), 
+(10, 'social_youtube', 'https://youtube.com'),
+(11, 'social_telegram', 'https://telegram.com'),
+(12, 'social_facebook', 'https://facebook.com'),
+(13, 'social_twitter', 'https://twitter.com'),
+(14, 'social_reddit', ''),
+(15, 'social_instagram', ''),
+(16, 'social_medium', ''),
+(17, 'social_vk', ''),
+(18, 'social_discord', ''), 
+(19, 'social_github', ''),
+(20, 'social_linkedin', ''),  
+(21, 'default_currency', 'USD'),
+(22, 'short_desc', 'example description'),
+(23, 'icon', ''),
+(24, 'logo', ''),
+(25, 'send_from', 'info@example.com'),
+(26, 'send_from_password', 'x12'),
+(27, 'smtp_server', 'mail.example.com'),
+(28, 'smtp_port', '25'),
+(29, 'user_can_blog', '0'),
+(30, 'user_can_signup', '1'),
+(31, 'user_can_login', '1'),
+(32, 'primary_color', '#d1cf1f'),
+(33, 'verify_mail', '0'),
+(34, 'verify_phone', '0'),
+(35, 'strong_password', '0'),
+(36, 'user_loop_sequence', '24'),
+(37, 'sessions_last', '1'),
+(38, 'company_address', '123 street');
 
 --------
 -- users
