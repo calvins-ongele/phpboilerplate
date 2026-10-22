@@ -1,6 +1,6 @@
-----
+-- --
 -- settings table
-----
+-- --
 create table settings(
   id int auto_increment primary key,
   name varchar(50),
@@ -50,9 +50,9 @@ INSERT INTO `settings` (`id`, `name`, `value`) VALUES
 (37, 'sessions_last', '1'),
 (38, 'company_address', '123 street');
 
---------
+-- -- -- --
 -- users
---------
+-- -- -- --
 create table users(
   id int auto_increment primary key,
   username varchar(50) unique,
@@ -64,9 +64,9 @@ create table users(
   updated_at datetime on update current_timestamp()
 );
 
-----------
+-- -- -- -- --
 -- analytics
------
+-- -- -
 CREATE TABLE `analytics` (
   `id` int(11) auto_increment primary key,
   `visited_at` datetime DEFAULT NULL,
@@ -77,6 +77,20 @@ CREATE TABLE `analytics` (
   `ip_address` varchar(45) DEFAULT NULL,
   `is_bot` varchar(40) DEFAULT NULL
 )  ;
+
+--
+-- Table structure for table `blog_categories`
+--
+
+CREATE TABLE `blog_categories` (
+  `bc_ID` int(11) primary key auto_increment,
+  `bc_name` varchar(100) NOT NULL,
+  `bc_url` varchar(40) NOT NULL unique,
+  `bc_desc` text DEFAULT NULL,
+  `bc_views` int(11) DEFAULT 0,
+  `bc_image` varchar(100) DEFAULT NULL
+);
+
 
 --
 -- Table structure for table `blog`
@@ -99,18 +113,6 @@ CREATE TABLE `blog` (
   FOREIGN KEY (`blog_user_fk`) REFERENCES `users` (`id`) ON DELETE CASCADE
 )  ;
 
---
--- Table structure for table `blog_categories`
---
-
-CREATE TABLE `blog_categories` (
-  `bc_ID` int(11) primary key auto_increment,
-  `bc_name` varchar(100) NOT NULL,
-  `bc_url` varchar(40) NOT NULL unique,
-  `bc_desc` text DEFAULT NULL,
-  `bc_views` int(11) DEFAULT 0,
-  `bc_image` varchar(100) DEFAULT NULL
-);
 
 --
 -- Table structure for table `contactus`
