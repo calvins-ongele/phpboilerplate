@@ -1,0 +1,44 @@
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 220-deluxenew.rcnoc.com ESMTP Exim 4.96 #2 Sun, 01 Oct 2023 16:39:53 +0200 220-We do not authorize the use of this system to transport unsolicited, 220 and/or bulk e-mail.<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: EHLO www.melody.africa<br>
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 250-deluxenew.rcnoc.com Hello www.melody.africa [::1]250-SIZE 188743680250-8BITMIME250-PIPELINING250-PIPECONNECT250-AUTH PLAIN LOGIN250-STARTTLS250 HELP<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: STARTTLS<br>
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 220 TLS go ahead<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: EHLO www.melody.africa<br>
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 250-deluxenew.rcnoc.com Hello www.melody.africa [::1]250-SIZE 188743680250-8BITMIME250-PIPELINING250-PIPECONNECT250-AUTH PLAIN LOGIN250 HELP<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: MAIL FROM:&lt;business@melody.africa&gt;<br>
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 250 OK<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: RCPT TO:&lt;calvinsongele@gmail.com&gt;<br>
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 250 Accepted<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: DATA<br>
+2023-10-01 14:39:53 SERVER -&gt; CLIENT: 354 Enter message, ending with &quot;.&quot; on a line by itself<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Date: Sun, 1 Oct 2023 17:39:53 +0300<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: To: calvinsongele@gmail.com<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: From: &quot;Melody.Africa&quot; &lt;business@melody.africa&gt;<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Subject: Password Reset Request | Www.melody.africa<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Message-ID: &lt;66zJaUc6dmLgEODDBVqbI16YQd8rYsSwGtorPGwuH8@www.melody.africa&gt;<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: X-Mailer: PHPMailer 6.8.0 (https://github.com/PHPMailer/PHPMailer)<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: MIME-Version: 1.0<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Content-Type: multipart/alternative;<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER:  boundary=&quot;b1=_66zJaUc6dmLgEODDBVqbI16YQd8rYsSwGtorPGwuH8&quot;<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Content-Transfer-Encoding: 8bit<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: --b1=_66zJaUc6dmLgEODDBVqbI16YQd8rYsSwGtorPGwuH8<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Content-Type: text/plain; charset=us-ascii<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: &lt;h3 style=&#039;padding: 4px; background-color:darkblue!important;&#039;&gt; Forgotten Password &lt;/h3&gt;&lt;p&gt;Dear user, &lt;br&gt;Click button below to reset your password before a 2 hour expiry. Ignore if you didn&#039;t make this request.&lt;br&gt;&lt;br&gt;&lt;a  href=&#039;https://www.melody.africa/index/reset-password/?s=9ed941e80eba5ab2&amp;t=b4904c321b6e5024c4e20f902eadd2710762afb8af6fa5bcec1d6207d2ad4222&#039;&gt;&lt;button style=&#039;background:blue; border-radius: 5px; padding: 10px;&#039;&gt;  Reset Password  &lt;/button&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: --b1=_66zJaUc6dmLgEODDBVqbI16YQd8rYsSwGtorPGwuH8<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: Content-Type: text/html; charset=us-ascii<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: &lt;div style=&#039; position: relative;padding: 0.75rem 1.25rem;margin-bottom: 1rem;border: 1px solid #f3f3f3; border-radius: 0.25rem;&#039;&gt; <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER:          &lt;div style=&#039;margin: 2px; padding: 1px;  &#039;&gt; &lt;h3 style=&#039;padding: 4px; background-color:darkblue!important;&#039;&gt; Forgotten Password &lt;/h3&gt;&lt;p&gt;Dear user, &lt;br&gt;Click button below to reset your password before a 2 hour expiry. Ignore if you didn&#039;t make this request.&lt;br&gt;&lt;br&gt;&lt;a  href=&#039;https://www.melody.africa/index/reset-password/?s=9ed941e80eba5ab2&amp;t=b4904c321b6e5024c4e20f902eadd2710762afb8af6fa5bcec1d6207d2ad4222&#039;&gt;&lt;button style=&#039;background:blue; border-radius: 5px; padding: 10px;&#039;&gt;  Reset Password  &lt;/button&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;   &lt;hr&gt; <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER:          &lt;div style=&#039;background:#f7f7f7; padding:3px;&#039;&gt; &lt;p&gt;From Www.melody.africa&lt;br&gt; www.veelpay.com &lt;/p&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt;<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: --b1=_66zJaUc6dmLgEODDBVqbI16YQd8rYsSwGtorPGwuH8--<br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: <br>
+2023-10-01 14:39:53 CLIENT -&gt; SERVER: .<br>
+2023-10-01 14:39:54 SERVER -&gt; CLIENT: 250 OK id=1qmxbt-0055lB-3D<br>
+2023-10-01 14:39:54 CLIENT -&gt; SERVER: QUIT<br>
+2023-10-01 14:39:54 SERVER -&gt; CLIENT: 221 deluxenew.rcnoc.com closing connection<br>
+Success{"error":"false","msg":"<script> $('#pwdresetemail').removeClass('wrongInput'); <\/script><div class='card'><h6 class='alert alert-success'> Success <\/h6><ul class='ml-2 error_list list-unstyled'><li style='color:green;'> 1. Check your email to continue. Check your spam folder if you don't see our mail!<li><\/ul><\/div>","cl":""}
