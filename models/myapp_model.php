@@ -21,8 +21,8 @@ class MyApp_Model extends Model
                 
                 Session::set('email', $user[1]['user_email']);
                 Session::set('role', $user[1]['user_role']); 
-                Session::set('userid', $user[1]['user_ID']);  
-                Session::set('dp', $user[1]['user_ID']);
+                Session::set('userid', $user[1]['id']);  
+                Session::set('dp', $user[1]['id']);
                 Session::set('name', $user[1]['user_full_name']);
                 Session::set('tel', $user[1]['user_phone']);  
                 Session::set('company', $this->_settings()['site_name']);     
@@ -77,8 +77,8 @@ class MyApp_Model extends Model
 
             Session::set('email', $user[1]['user_email']);
             Session::set('role', $user[1]['user_role']); ;
-            Session::set('userid', $user[1]['user_ID']);  
-            Session::set('dp', $user[1]['user_ID']);
+            Session::set('userid', $user[1]['id']);  
+            Session::set('dp', $user[1]['id']);
             Session::set('name', $user[1]['user_full_name']);
             Session::set('tel', $user[1]['user_phone']);  
             Session::set('company', $this->_settings()['site_name']);  
@@ -213,7 +213,7 @@ class MyApp_Model extends Model
         echo $this->_ms(0);
     }
 	public function edituser() { 
-        //$me = $this->_get('users', 'user_ID', [Session::get('userid')], false)[1];
+        //$me = $this->_get('users', 'id', [Session::get('userid')], false)[1];
         
         $id = $_POST['id'];
         if ($_POST['id'] == 'self_edit') $id = Session::get('userid');
@@ -602,21 +602,21 @@ class MyApp_Model extends Model
     
 	public function deactivateuser() {  
         
-        echo $this->_update('users', 'user_status', 'user_ID ', ['Suspended', $_POST['id']]); 
+        echo $this->_update('users', 'user_status', 'id ', ['Suspended', $_POST['id']]); 
         
         $this->log(Session::get('email') . " suspended a user on " . date('Y-m-d, H:i:s'), 'User Mgt');
      } 
 	public function reinstateuser() {  
          
 
-        echo $this->_update('users', 'user_status', 'user_ID ', ['Active', $_POST['id']]); 
+        echo $this->_update('users', 'user_status', 'id ', ['Active', $_POST['id']]); 
         
         $this->log(Session::get('email') . " reinstated a user on " . date('Y-m-d, H:i:s'), 'User Mgt');
     } 
 	public function deluser() {    
         
 
-        echo $this->_delete('users', 'user_ID ', [$_POST['id']]);  
+        echo $this->_delete('users', 'id ', [$_POST['id']]);  
         
         $this->log(Session::get('email') . " deleted a user on " . date('Y-m-d, H:i:s'), 'User Mgt');
     }
