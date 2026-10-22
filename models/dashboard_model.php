@@ -11,13 +11,13 @@ class Dashboard_Model extends Model {
     
     public function users($id = '') {
         if (!empty($id)) {
-            return $this->_get('users', 'user_ID', [$id], 0 )[1];
+            return $this->_get('users', 'id', [$id], 0 )[1];
         }
-        return [$this->_get("users " )[0], $this->_get("users order by user_ID desc {$this->pagination()}" )[1] ];
+        return [$this->_get("users " )[0], $this->_get("users order by id desc {$this->pagination()}" )[1] ];
     }
     
     public function getlogs($max) {  
-        return $this->_get('logs left join users on l_by = user_ID ', '', [  ], true, " order by l_ID desc limit $max" )[1];
+        return $this->_get('logs left join users on l_by = id ', '', [  ], true, " order by l_ID desc limit $max" )[1];
     }
     
     public function getcontacts($status = 'current', $id = '') { 
@@ -61,7 +61,7 @@ class Dashboard_Model extends Model {
     public function getsummaries() { 
     
         return [
-            'users' => $this->_getmore('users', 'count(user_ID)', 'user_ID >', [0]),
+            'users' => $this->_getmore('users', 'count(id)', 'id >', [0]),
             'contact'=>$this->_getmore('contactus', 'count(id)', 'id > ', [0]),
             'visits'=>$this->_getmore('analytics', 'count(id)', 'id > ', [0]),
             
