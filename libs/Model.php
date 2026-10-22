@@ -182,7 +182,7 @@ class Model extends Database {
 	 * @param string user_url
 	 */
 	protected function _getId(string $url) {		
-		return $this->_get('users', 'user_url',[$url], false  )[1]['user_ID'];
+		return $this->_get('users', 'user_url',[$url], false  )[1]['id'];
 	}
     
 	protected function _uniq_url($table, $columnurl) {
@@ -230,9 +230,9 @@ class Model extends Database {
 	    
 	    if (empty($id_email)) {
 	        if( Session::get('userid') == null ) return [];
-		    return $this->_get('users  ', 'user_ID', [ Session::get('userid') ], false )[1];
+		    return $this->_get('users  ', 'id', [ Session::get('userid') ], false )[1];
 	    }
-		return $this->_get('users  ', 'user_ID, user_email', [ $id_email, $id_email ], false, '', 'or' )[1];
+		return $this->_get('users  ', 'id, user_email', [ $id_email, $id_email ], false, '', 'or' )[1];
 	} 
     /**
      * @param string message required
