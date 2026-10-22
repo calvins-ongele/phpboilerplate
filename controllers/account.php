@@ -8,7 +8,7 @@ class Account extends Controller {
     }
 
     public function index() {  
-	if ($this->view->_company['user_can_login'] != 1) {
+	if ($this->view->_settings['user_can_login'] != 1) {
             CustomFunctions::relocate('/account/not-found');die; 
         }
           if (Session::get('email') != null) CustomFunctions::relocate('/dashboard'); 
@@ -29,7 +29,7 @@ class Account extends Controller {
     }
     
     public function signup() {   
-	if ($this->view->_company['user_can_signup'] != 1) {
+	if ($this->view->_settings['user_can_signup'] != 1) {
             CustomFunctions::relocate('/account/not-found');die; 
         }
           if (Session::get('email') != null) CustomFunctions::relocate('/dashboard'); 
