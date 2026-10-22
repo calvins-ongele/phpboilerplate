@@ -1,9 +1,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
-<link rel="icon" type="image/*" href="/public/assets/uploads/<?php echo $this->_company['icon'] ?>" />
+<link rel="icon" type="image/*" href="/public/assets/uploads/<?php echo $this->_settings['icon'] ?>" />
 <style>
-    *{  --primary: <?= $this->_company['primary_color'] ?>;  }
+    *{  --primary: <?= $this->_settings['primary_color'] ?>;  }
    
 
 </style>
@@ -13,6 +13,6 @@
 
 <link rel="stylesheet" href="/public/static/custom-main.css?v=<?= rand(); //$this->version; ?>"> 
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-<title><?php echo $this->title ?> | <?= $this->page_id=='home' ? $this->_company['short_desc'] : $this->_company['site_name'] ?></title>
+<title><?php echo $this->title ?> | <?= $this->page_id=='home' ? $this->_settings['short_desc'] : $this->_settings['site_name'] ?></title>
  
 
