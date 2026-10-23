@@ -40,6 +40,47 @@ class MyApp extends Controller {
     public function update_company_images() {$this->model->update_company_images(); 	}   
          
     
+    public function requests() { 
+        
+        if (!CSRF::isVerified($_POST['csrf_token'] ?? '')) {
+            http_response_code(403);
+            echo json_encode(['error'=>true, 'msg'=>"Invalid CSRF token. Please refresh the page and try again."]); 
+            return;
+        }
+            $method = $_POST['method'] ?? ''; 
+            try {
+                $this->model->$method();
+            } catch(Exception $e) {
+                http_response_code(500);
+                file_put_contents('logs/Admin.Api.log', json_encode($e), FILE_APPEND);
+                echo json_encode(['error'=>true, 'msg'=>'Something fatally went wrong!']);
+            }
+    }
+    
+    public function requestsadmin() { 
+        if ((Session::get('userid') == null) || empty(Session::get('userid'))) {
+            http_response_code(403);
+            die(json_encode(['error'=>true, 'msg'=>'Login required.']));
+        }
+        
+        if (!CSRF::isVerified($_POST['csrf_token'] ?? '')) {
+            http_response_code(403);
+            echo json_encode(['error'=>true, 'msg'=>"Invalid CSRF token. Please refresh the page and try again."]); 
+            return;
+        }
+
+        $method = $_POST['method'] ?? ''; 
+        try {
+            $this->model->$method();
+        } catch(Exception $e) {
+            http_response_code(500);
+            file_put_contents('logs/Myapp.Api.log', json_encode($e), FILE_APPEND);
+            echo json_encode(['error'=>true, 'msg'=>'Something fatally went wrong!']);
+        }
+    }
+
+
+    
     
     //specific
 
