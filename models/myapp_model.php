@@ -312,7 +312,7 @@ class MyApp_Model extends Model
         }
         if ($_POST['action'] == 'insert') {
             
-            $img = time().rand().'jpeg';
+            $img = time().rand().'.jpeg';
             if(empty($_FILES['file']['name'])) die($this->_ms(1, "File must be uploaded"));
             
             CustomFunctions::movefile('file', $img);
