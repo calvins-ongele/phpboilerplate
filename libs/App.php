@@ -9,7 +9,7 @@ class App {
 	private $_modelPath = 'model/'; 
 	private $_errorFile = 'err.php';
 	private $_defaultFile = 'index.php';
-	private $excluded_classes = array('blog','read','legal' );
+	private $excluded_classes = array('blog','read','legal', 'file' );
 	private $excluded_methods = array('categories',  'search');
 
     /**
