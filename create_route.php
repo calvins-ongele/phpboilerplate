@@ -70,10 +70,12 @@ foreach ($filesToCreate as $fileName => $content) {
     }
 }
 
-//make the views directory
-mkdir("views/{$baseName}");
-//create index file
-file_put_contents("views/{$baseName}/index.php", "<h1>Route created successfully. Edit me!!!</h1>");
+if (!is_dir("views/{$baseName}")) {
+    //make the views directory
+    mkdir("views/{$baseName}");
+    //create index file
+    file_put_contents("views/{$baseName}/index.php", "<h1>Route created successfully. Edit me!!!</h1>");
+}
 
 
 
