@@ -16,8 +16,7 @@ class MyApp extends Controller {
     public function session_last_longer() {   }  
     public function login() { $this->model->login(); }  
     public function register() { $this->model->register(); }  
-    public function subscribe() { $this->model->subscribe(); 	}
-	public function contactform() { 	$this->model->contactform(); 	}   
+    public function subscribe() { $this->model->subscribe(); 	}   
     public function forgotpassword() {$this->model->forgotpassword(); 	}
     public function resetpass() {$this->model->resetpass(); 	}  
     public function update_analytics() {$this->model->update_analytics(); 	}  
@@ -48,11 +47,21 @@ class MyApp extends Controller {
             return;
         }
             $method = $_POST['method'] ?? ''; 
+            
             try {
+                if (empty($method)) {
+                    throw new Exception("Error Processing Request. Please try again later.", 1);
+                }
+
+                if (!method_exists($this->model, $method)) {
+                    throw new Exception("Error Processing Request! Please try again later.", 1);
+                }
+
                 $this->model->$method();
             } catch(Exception $e) {
                 http_response_code(500);
-                file_put_contents('logs/Admin.Api.log', json_encode($e), FILE_APPEND);
+                if (!is_dir('logs')) mkdir('logs');
+                file_put_contents('logs/Admin.Api.log', $e->getMessage()."\r", FILE_APPEND);
                 echo json_encode(['error'=>true, 'msg'=>'Something fatally went wrong!']);
             }
     }
@@ -71,10 +80,18 @@ class MyApp extends Controller {
 
         $method = $_POST['method'] ?? ''; 
         try {
+            if (empty($method)) {
+                throw new Exception("Error Processing Request. Please try again later.", 1);
+            }
+
+            if (!method_exists($this->model, $method)) {
+                throw new Exception("Error Processing Request! Please try again later.", 1);
+            }
+
             $this->model->$method();
         } catch(Exception $e) {
             http_response_code(500);
-            file_put_contents('logs/Myapp.Api.log', json_encode($e), FILE_APPEND);
+            file_put_contents('logs/Admin.Api.log', $e->getMessage()."\r", FILE_APPEND); 
             echo json_encode(['error'=>true, 'msg'=>'Something fatally went wrong!']);
         }
     }
