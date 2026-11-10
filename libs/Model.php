@@ -226,7 +226,24 @@ class Model extends Database {
 
 		return $output; 
 	}
+	
+	protected function rememberUser(int $userId, string $key) {
+		$expiry = time() * (REMEMBER_COOKIE_EXPIRY_DAYS * 86400);
+
+		$this->_delete('remember_keys', 'usr_id', [$userId]);
+
+		$this->_insert('remember_keys', 'usr_id,usr_key,expiry', [$userId,$key,$expiry ]);
+	}
 	public function me($id_email = '') { 
+
+		//handle cookies firs -- this is entry level
+		$remember = $_COOKIE[REMEMBER_COOKIE_NAME] ?? '';
+		if (!empty($remember)) {
+			$r = $this->_get("remember_keys", "usr_key, expiry > ", [$remember, time()], 0)[1];
+			if (!empty($r['usr_id'])) $id_email = $r['usr_id'];
+			else Session::destroy();
+
+		}
 	    
 	    if (empty($id_email)) {
 	        if( Session::get('userid') == null ) return [];
