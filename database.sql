@@ -64,6 +64,18 @@ create table users(
   updated_at datetime on update current_timestamp()
 );
 
+
+-- -------
+-- remember_keys
+-- ------
+create table remember_keys(
+  id int auto_increment primary key,
+  usr_id int not null,
+  usr_key varchar(255),
+  expiry int
+);
+
+
 -- -- -- -- --
 -- analytics
 -- -- -
