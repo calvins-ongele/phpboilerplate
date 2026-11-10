@@ -52,50 +52,50 @@ class MyApp_Model extends Model
 		echo $this->_ms(false,  "Login was successful", third: urlencode($await_login));
         
     }
-    
-    public function register() {   
-		$message = "";
-		
+ 
+    public function register() {     
+
 		if (!CustomFunctions::validEmail($_POST['email'])) {
-		    echo $this->_ms(true, $message . 'Invalid email');die;
+		    echo $this->_ms(true, 'Invalid email');die;
 		}
 
 		 $get = $this->_get('users', 'user_email', [$_POST['email']]) ;
 		 if ($get[0] > 0) {
-		     die($this->_ms(true, $message. "Email registered already. Please use another email or reset password if it's yours."));
-		 }
-		 if ($_POST['pass'] != $_POST['pass2']){
-		     die($this->_ms(true, $message. 'The two passwords don\'t match.'));
-		 }
+		     die($this->_ms(true, "Email registered already. Please use another email or reset password if it's yours."));
+		 } 
 		 
 		if ( ! CustomFunctions::isStrongPassword($_POST['pass']) ) {  
 		    if ($this->_settings()['strong_password'] == 1  )
 		        die($this->_ms(true, "Password is weak. Please ensure it is at least 8 characters, a capital and small letter,a special character and finally a number."));
 		}
-		 
-		 $this->_insert('users', 'user_full_name, user_email, user_pass, user_phone, user_reg_date', [
-		     $_POST['name'], $_POST['email'], password_hash($_POST['pass'], PASSWORD_DEFAULT),$_POST['phone'], time()  ]);
-		 
-            $user = $this->_get('users', 'user_email ', [ $_POST['email']  ], false);
- 
 
-            Session::set('email', $user[1]['user_email']);
-            Session::set('role', $user[1]['user_role']); ;
-            Session::set('userid', $user[1]['id']);  
-            Session::set('dp', $user[1]['id']);
-            Session::set('name', $user[1]['user_full_name']);
-            Session::set('tel', $user[1]['user_phone']);  
-            Session::set('company', $this->_settings()['site_name']);  
-            
+
+		 
+		 $insert = $this->_insert('users', 'user_full_name, user_email, user_pass ', [
+		     $_POST['name']??'', $_POST['email'], password_hash($_POST['pass'], PASSWORD_DEFAULT)  ]);
+		 
+            $user = $this->_get('users', 'id ', [ json_decode($insert)->cl  ], false);
+  
+            Session::set('role', $user[1]['user_role']);
+            Session::set('userid', $user[1]['id']);    
             
             $this->log("{$user[1]['user_email']} signed up into the system at " . date('Y-m-d, H:i:s'), 'Account' ); 
-			$await_login = Session::get('await_login') != null ? Session::get('await_login') : '/dashboard';
+			$await_login = Session::get('await_login') != null ? Session::get('await_login') : '/user';
 			
-			if ( ($this->_settings()['verify_mail']  ) && ($user[1]['user_email_verified'] == 0) ) {
+			if ( ($this->_settings()['verify_mail']  ) && (($user[1]['user_email_verified']??0) == 0) ) {
 			    $await_login = "/account/verify-email?email={$user[1]['user_email']}";
 			}
+
+			if(!empty($_POST['return'])) {
+				$await_login = $_POST['return'];
+			}
+
+			if (!empty($_POST['remember'])) {
+				$key = CustomFunctions::randchars(40,1);
+				$this->rememberUser($user[1]['id'], $key);
+			}
 			
-            echo $this->_ms(false,  CustomFunctions::relocate($await_login, false));
+            echo $this->_ms(false,  "Account was successfully created", third: urlencode($await_login));
     }
 
     public function update_analytics() {
