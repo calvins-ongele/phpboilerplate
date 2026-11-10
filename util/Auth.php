@@ -1,49 +1,35 @@
 <?php
 
 class Auth {
-	public static function Login($dest = null){
-		@session_start();
-		if ((!isset($_SESSION['loggedIn'])) || ($_SESSION['loggedIn'] != true) ) {
+	public static function handleAdminLogin($dest = null){
+		Session::initialize();
+		
+		if ((Session::get('userid') == null) || (Session::get('role') !== 'Admin' ) ) {
 			session_destroy();
-
-			if ($dest == '') CustomFunctions::relocate('/'); 
-			else CustomFunctions::relocate('/' . $dest); 
+			Session::initialize();
+			//Session::set('await_login', $_SERVER["REQUEST_URI"]);
+			CustomFunctions::redirect('/');
 			exit;
 		}
-
-		@session_start();
-		$logged = (Session::get('loggedIn') != null) ? true : false;
-		if ($logged == false) {
-			Session::destroy();
-			if ($dest == '') CustomFunctions::relocate('/'); 
-			else CustomFunctions::relocate('/' . $dest); 
-			exit;
-		}
+ 
 	}
 
 	 
 	public static function handleLogin() {
-		@session_start();
+		Session::initialize();
 		if (isset($_COOKIE['tkuvn'])) {
-			CustomFunctions::relocate('/account/auth/' .  $_SERVER["REQUEST_URI"]);
-		} else {
-			if (Session::get('userid') == null) {
-				session_destroy();
-				@session_start();
-				Session::set('await_login', $_SERVER["REQUEST_URI"]);
-				CustomFunctions::relocate('/');
-				exit;
-			}
-
-			Session::initialize();
-			if (Session::get('userid') == null) {
-				Session::destroy();
-				@session_start();
-				Session::set('await_login', $_SERVER["REQUEST_URI"]);
-				CustomFunctions::relocate('/');
-				exit;
-			}
+			CustomFunctions::redirect('/account/auth/' .  $_SERVER["REQUEST_URI"]);
+			return;
+		}  
+		if (Session::get('userid') == null) {
+			session_destroy();
+			@session_start();
+			Session::set('await_login', $_SERVER["REQUEST_URI"]);
+			CustomFunctions::redirect('/');
+			exit;
 		}
+
+			 
 	}
 
 
