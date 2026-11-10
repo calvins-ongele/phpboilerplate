@@ -7,45 +7,49 @@ class MyApp_Model extends Model
 	}
 
 	// methods
-    public function login() {   
-		$message = ""; 
+    
+    public function login() {    
 
         if (!empty($_POST['username']) && (!empty($_POST['pass']))  ) {
+			die($this->_ms(1, "Please fill up the required details.", http_response:400));
+		}
 
-            $user = $this->_get('users', 'user_email ', [ $_POST['username']  ], false);
-            if ($user[0] == 0) { 
-                echo $this->_ms(true, $message  . 'User doesn\'t exists');die;
-            } 
+		$user = $this->_get('users', 'user_email ', [ $_POST['username']  ], false);
+		if ($user[0] == 0) { 
+			die($this->_ms(1, "Incorrect login details.", http_response:400));
+		} 
 
-            if ( password_verify($_POST['pass'], $user[1]['user_pass']) ) {
+		if (! password_verify($_POST['pass'], $user[1]['user_pass']) ) {
+			die($this->_ms(1, "Incorrect login details.", http_response:400));
+		}
                 
-                Session::set('email', $user[1]['user_email']);
-                Session::set('role', $user[1]['user_role']); 
-                Session::set('userid', $user[1]['id']);  
-                Session::set('dp', $user[1]['id']);
-                Session::set('name', $user[1]['user_full_name']);
-                Session::set('tel', $user[1]['user_phone']);  
-                Session::set('company', $this->_settings()['site_name']);     
-                $this->log("{$user[1]['user_email']} logged into the system at " . date('Y-m-d, H:i:s'), 'Account' );
-                
-				$await_login = Session::get('await_login') != null ? Session::get('await_login') : '/dashboard';
-				
-				
-    			if ( ($this->_settings()['verify_mail'] == 1) && ($user[1]['user_email_verified'] == 0) ) {
-    			    $await_login = "/account/verify-email?email={$user[1]['user_email']}";
-    			}
-    			
-    			if ( ($this->_settings()['verify_phone'] == 1) && ($user[1]['user_phone_verified'] == 0) ) {
-    			    $await_login = "/account/verify-tel?email={$user[1]['user_email']}";
-    			}
-                echo $this->_ms(false,  CustomFunctions::relocate($await_login, false));
-                
-            } else echo $this->_ms(true, $message . 'Incorrect details');
-            
-            
-            // proceed
-        } else  echo $this->_ms(true, $message. 'Incorrect details');
+		Session::set('role', $user[1]['user_role']); 
+		Session::set('userid', $user[1]['id']);   
+
+		$this->log("{$user[1]['user_email']} logged into the system at " . date('Y-m-d, H:i:s'), 'Account' );
+		
+		$await_login = Session::get('await_login') != null ? Session::get('await_login') : '/dashboard';
+		
+		
+		if ( ($this->_settings()['verify_mail'] == 1) && (($user[1]['user_email_verified']??0) == 0) ) {
+			$await_login = "/account/verify-email?email={$user[1]['user_email']}";
+		}
+		
+		if ( ($this->_settings()['verify_phone'] == 1) && (($user[1]['user_phone_verified']??0) == 0) ) {
+			$await_login = "/account/verify-tel?email={$user[1]['user_email']}";
+		}
+		 
         
+		if(!empty($_POST['return'])) {
+			$await_login = $_POST['return'];
+		}
+		
+		if (!empty($_POST['remember'])) {
+			$key = CustomFunctions::randchars(40,1);
+			$this->rememberUser($user[1]['id'], $key);
+		}
+		
+		echo $this->_ms(false,  "Login was successful", third: urlencode($await_login));
         
     }
     
