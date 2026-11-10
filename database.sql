@@ -58,6 +58,7 @@ create table users(
   username varchar(50) unique,
   user_full_name varchar(100),
   user_email varchar(100) unique,
+  user_role varchar(20) default 'Customer',
   user_pass varchar(255),
 
   created_at datetime default current_timestamp(),
