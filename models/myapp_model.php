@@ -7,7 +7,6 @@ class MyApp_Model extends Model
 	}
 
 	// methods
-    
     public function login() {    
 
         if (!empty($_POST['username']) && (!empty($_POST['pass']))  ) {
@@ -44,15 +43,16 @@ class MyApp_Model extends Model
 			$await_login = $_POST['return'];
 		}
 		
+		$key = '';
 		if (!empty($_POST['remember'])) {
 			$key = CustomFunctions::randchars(40,1);
 			$this->rememberUser($user[1]['id'], $key);
 		}
 		
-		echo $this->_ms(false,  "Login was successful", third: urlencode($await_login));
+		echo $this->_ms(false,  "Login was successful", third: [urlencode($await_login), $key]);
         
     }
- 
+    
     public function register() {     
 
 		if (!CustomFunctions::validEmail($_POST['email'])) {
@@ -90,12 +90,13 @@ class MyApp_Model extends Model
 				$await_login = $_POST['return'];
 			}
 
+			$key = '';
 			if (!empty($_POST['remember'])) {
 				$key = CustomFunctions::randchars(40,1);
 				$this->rememberUser($user[1]['id'], $key);
 			}
 			
-            echo $this->_ms(false,  "Account was successfully created", third: urlencode($await_login));
+            echo $this->_ms(false,  "Account was successfully created", third: [urlencode($await_login), $key]);
     }
 
     public function update_analytics() {
