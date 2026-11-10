@@ -290,7 +290,7 @@ class CustomFunctions {
         return preg_replace('/[^A-Za-z0-9\-]/', '', $url);
     }
 
-    public static function relocate($target, $echo = true) {
+    public static function locate(string $target, $echo = true) {
         if (!$echo) {
             return "<script> window.location.href='" . $target . "'</script>";
         }
