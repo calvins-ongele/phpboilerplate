@@ -437,7 +437,18 @@ class CustomFunctions {
         if (!$full) $string = array_slice($string, 0, 1);
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
+    static function maskString(string $text, int $visibleStart = 0, int $visibleEnd = 4, string $maskChar = '*'): string {
+    $length = strlen($text);
     
+    // Return original if string is too short to mask
+    if ($length <= ($visibleStart + $visibleEnd)) {
+        return $text;
+    }
+
+    $maskLength = $length - $visibleStart - $visibleEnd;
+    return substr_replace($text, str_repeat($maskChar, $maskLength), $visibleStart, $maskLength);
+}
+
     public static function maskPhoneNumber($phone, $how_many = 6) {  
         // Remove non-numeric characters
         $phone = preg_replace('/\D/', '', $phone);
