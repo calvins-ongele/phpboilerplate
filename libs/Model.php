@@ -24,6 +24,9 @@ class Model extends Database {
 
 		 
 		http_response_code($http_response);
+		if (($http_response === 200) && ($error)){
+			http_response_code(400);
+		}
 		 
 		return json_encode(array(
 			"error"=> $error == false ? false : true,
