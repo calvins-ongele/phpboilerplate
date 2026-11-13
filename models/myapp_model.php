@@ -359,13 +359,13 @@ class MyApp_Model extends Model
         
         if ($_POST['action'] == 'insert') {
             
-            if ( $this->_get('blog_categories', 'bsite_name', [$_POST['name']])[0] > 0 ) die($this->_ms(1, "Category names don't have to match."));
+            if ( $this->_get('blog_categories', 'bc_name', [$_POST['name']])[0] > 0 ) die($this->_ms(1, "Category names don't have to match."));
              
-            echo $this->_insert('blog_categories', 'bsite_name, bc_url, bc_desc,bc_image ',  [ $_POST['name'], CustomFunctions::randchars(5), $_POST['body'],$img ] );
+            echo $this->_insert('blog_categories', 'bc_name, bc_url, bc_desc,bc_image ',  [ $_POST['name'], CustomFunctions::randchars(5), $_POST['body'],$img ] );
         }
         else if ($_POST['action'] == 'update') {
             
-            echo $this->_update('blog_categories', 'bsite_name, bc_desc ', 'bc_ID',  [ $_POST['name'], $_POST['body'], $_POST['id'] ] );
+            echo $this->_update('blog_categories', 'bc_name, bc_desc ', 'bc_ID',  [ $_POST['name'], $_POST['body'], $_POST['id'] ] );
         }
         
         else if ($_POST['action'] == 'delete') { //drop
