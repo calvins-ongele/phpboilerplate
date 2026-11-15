@@ -3,15 +3,22 @@
 class Controller {
 
 	function __construct() {
+		Session::init();
 	    $view_object = new View();
 		$this->view = $view_object;
 
 		// set defualt timezone some up;; affects the whole project
-		date_default_timezone_set("Africa/Nairobi");
-		Session::initialize();
+		date_default_timezone_set("Africa/Nairobi"); 
 	}
 	
-	public function loadModel($name) {
+	public function loadModel(string $name) {
+
+		/***
+		 * 
+		 * // could run a middle man here----------------
+		 * 
+		 * 
+		 */ 
 		
 		$path = 'models/'.$name.'_model.php';
 		

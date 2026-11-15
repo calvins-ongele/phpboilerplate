@@ -1,6 +1,5 @@
 <?php
-
-//use phpDocumentor\Reflection\Types\Parent_;
+ 
 
 class Index extends Controller {
 

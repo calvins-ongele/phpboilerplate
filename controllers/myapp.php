@@ -3,8 +3,7 @@
 class MyApp extends Controller {
 
 	public function __construct() {
-		parent::__construct();
-		Session::initialize();
+		parent::__construct(); 
 		if (!isset($_POST))	return;
 	}
 	

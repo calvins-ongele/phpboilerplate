@@ -9,44 +9,44 @@ class Account extends Controller {
 
     public function index() {  
 	if ($this->view->_settings['user_can_login'] != 1) {
-            CustomFunctions::relocate('/account/not-found');die; 
+            CustomFunctions::locate('/account/not-found');die; 
         }
-          if (Session::get('email') != null) CustomFunctions::relocate('/dashboard'); 
+          if (Session::get('email') != null) CustomFunctions::locate('/dashboard'); 
         
 		  $this->view->title =   'Login ' ;
 		  $this->view->render('account/login');
     }
      
     public function login() {   
-        CustomFunctions::relocate('/account'); 
+        CustomFunctions::locate('/account'); 
     }
    
     public function verifyemail() {   
-        CustomFunctions::relocate('/account/verify-email'); 
+        CustomFunctions::locate('/account/verify-email'); 
     }
     public function verifytel() {   
-        CustomFunctions::relocate('/account/verify-tel'); 
+        CustomFunctions::locate('/account/verify-tel'); 
     }
     
     public function signup() {   
 	if ($this->view->_settings['user_can_signup'] != 1) {
-            CustomFunctions::relocate('/account/not-found');die; 
+            CustomFunctions::locate('/account/not-found');die; 
         }
-          if (Session::get('email') != null) CustomFunctions::relocate('/dashboard'); 
+          if (Session::get('email') != null) CustomFunctions::locate('/dashboard'); 
             
 		  $this->view->title =   'Create a new account ' ;
 		  $this->view->render('account/register'); 
     }
    
     public function forgotpassword() {
-          if (Session::get('email') != null) CustomFunctions::relocate('/dashboard'); 
+          if (Session::get('email') != null) CustomFunctions::locate('/dashboard'); 
           
 		  $this->view->title =   'Forgot Password ' ;
 		  $this->view->render('account/forgot-password'); 
     }
 
     public function newpassword() {   
-          if (Session::get('email') != null) CustomFunctions::relocate('/dashboard'); 
+          if (Session::get('email') != null) CustomFunctions::locate('/dashboard'); 
           
 		  $this->view->title =   'Set New Password ' ;
 		  $this->view->render('account/new-password'); 

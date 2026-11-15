@@ -7,7 +7,7 @@ class CustomFunctions {
 
 	
     // prepare a get url, add a _GET without breaking existing ones
-    public static function formatDynamicUrl($key, $value) {
+    public static function formatDynamicUrl(string $key, string $value) {
         //Get the current URI parts
         $urlParts = parse_url($_SERVER['REQUEST_URI']); 
         
@@ -409,7 +409,7 @@ class CustomFunctions {
         return CustomFunctions::time_elapsed_string('@' . $date);
     }
       
-    public static function time_elapsed_string($datetime, $full = false) {
+    public static function time_elapsed_string(string $datetime, $full = false) {
         $now = new DateTime;
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);

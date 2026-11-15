@@ -4,7 +4,7 @@ class Err extends Controller {
 
 	function __construct() {
 		parent::__construct();
-		Session::initialize();
+		Session::init();
 	}
 	
 	function index() { 

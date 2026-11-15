@@ -6,7 +6,7 @@ class View {
 		//this is the main view;; returns all htmls
 	}
 
-	public function render($name, $donotAdd = false){
+	public function render(string  $name, $donotAdd = false){
 		if ($donotAdd == true) {
 			require 'views/' . $name . '.php';	
 		}

@@ -3,8 +3,7 @@
 class Dashboard extends Controller {
     public function __construct()
     {
-        parent::__construct();
-        Session::initialize();
+        parent::__construct(); 
         Auth::handleLogin();
     }
 
@@ -19,7 +18,7 @@ class Dashboard extends Controller {
     public function communicate($action = '', $id = '') { 
         
           if ($this->view->_me['user_role'] != 'Admin') {
-              die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'));
+              die(CustomFunctions::locate('/'.PROFILE_NAV.'?unauthorized=true'));
           }
         
          if ($action == 'email') {
@@ -43,7 +42,7 @@ class Dashboard extends Controller {
     public function company() { 
         
         if ($this->view->_me['user_role'] != 'Admin') {
-          die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'));
+          die(CustomFunctions::locate('/'.PROFILE_NAV.'?unauthorized=true'));
         }
       
         $this->view->title = 'Company profile settngs';
@@ -65,7 +64,7 @@ class Dashboard extends Controller {
     public function users($action = 'all', $n = 0) {
         
         if ($this->view->_me['user_role'] != 'Admin') {
-          die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'));
+          die(CustomFunctions::locate('/'.PROFILE_NAV.'?unauthorized=true'));
         }
         
         $this->view->currentpage = $_GET['pg'] ?? 1;
@@ -101,11 +100,11 @@ class Dashboard extends Controller {
     public function blog($action = '', $id = null) { 
 	    
         if ($this->view->_settings['user_can_blog'] != 1) {
-            die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'));
+            die(CustomFunctions::locate('/'.PROFILE_NAV.'?unauthorized=true'));
         }
         
         if ( ($this->view->_me['user_role'] != 'Admin') && ($this->view->_settings()['user_can_blog'] != 1) ) {
-          die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'.($this->view->_settings()['user_can_blog'] != 1) ));
+          die(CustomFunctions::locate('/'.PROFILE_NAV.'?unauthorized=true'.($this->view->_settings()['user_can_blog'] != 1) ));
         }
          
         
@@ -141,7 +140,7 @@ class Dashboard extends Controller {
         
         
         if ($this->view->_me['user_role'] != 'Admin') {
-          die(CustomFunctions::relocate('/'.PROFILE_NAV.'?unauthorized=true'));
+          die(CustomFunctions::locate('/'.PROFILE_NAV.'?unauthorized=true'));
         }
            
       if ($action == 'contacts') {
@@ -159,8 +158,8 @@ class Dashboard extends Controller {
  
     public function logout() {
         Session::destroy();
-        if (!isset($_GET['message'])) CustomFunctions::relocate('/');
-        else CustomFunctions::relocate('/account?message=' . urlencode($_GET['message'] ?? '')  );
+        if (!isset($_GET['message'])) CustomFunctions::locate('/');
+        else CustomFunctions::locate('/account?message=' . urlencode($_GET['message'] ?? '')  );
     }
 
 

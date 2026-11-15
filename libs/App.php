@@ -2,8 +2,8 @@
 #[AllowDynamicProperties]
 class App {
 
-	private $_url = null;
-	private $_controller = null;
+	private mixed $_url = null;
+	private mixed $_controller = null;
 
 	private $_controllerPath = 'controllers/';
 	private $_modelPath = 'model/'; 
@@ -101,6 +101,12 @@ class App {
      */
 	private function _loadExistingController()
 	{
+		/***
+		 * 
+		 * // could run a middle man here----------------
+		 * 
+		 * 
+		 */
 	    $clean_controller = str_replace('-', '', $this->_url[0] ?? '');
 		$file = $this->_controllerPath . $clean_controller . '.php';
 		if (file_exists($file)) {

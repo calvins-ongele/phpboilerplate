@@ -57,6 +57,7 @@ create table users(
   id int auto_increment primary key,
   username varchar(50) unique,
   user_full_name varchar(100),
+  user_phone varchar(20),
   user_email varchar(100) unique,
   user_role varchar(20) default 'Customer',
   user_pass varchar(255),
@@ -73,7 +74,8 @@ create table remember_keys(
   id int auto_increment primary key,
   usr_id int not null,
   usr_key varchar(255),
-  expiry int
+  expiry int,
+  foreign key (usr_id) references users(id)
 );
 
 

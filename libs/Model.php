@@ -9,6 +9,7 @@ class Model extends Database {
 
     function __construct()
     {
+		Session::init();
         // $this->connection = new Database();
         // $this->db = new Database();
 
@@ -19,7 +20,7 @@ class Model extends Database {
     /**
 	 * @return string - cl could give last return ids when needed
 	 */
-    protected function _ms($error = false, string $ms = '', string $third = '', int $http_response = 200 ) {
+    protected function _ms($error = false, string $ms = '', mixed $third = '', int $http_response = 200 ) {
 		$newms = $error == false ? "Success" : "An errorr occurred";
 
 		 
@@ -37,7 +38,24 @@ class Model extends Database {
 	}  
 	/**
 	 * @return array 0=rowcount, 1=data
+	 * --recreate as _fetch -- face out _get()
 	 */ 
+	protected function _fetch(string $table, array $conditions = [], string $columns = '*', bool $fetchall = true, string $orderby = '',$del_rule = '' ):array {
+	
+		$sql = "SELECT * FROM {$columns} FROM `{$table}` ";
+		$params = [];
+		if (!empty($conditions)) {
+			$keys = array_keys($conditions);
+			$where = implode(' AND ', array_map(fn($col)=>"`{$col}` = ? ", $keys ) );
+			$sql .= " WHERE {$where} ";
+			$params = array_values($conditions);
+		}
+
+		$stmt = $this->connection()->prepare("{$sql} {$orderby} ");
+		$stmt->execute($params);
+
+		return $fetchall ? [$stmt->rowCount(), $stmt->fetchAll()] : [$stmt->rowCount(), $stmt->fetch()];
+	}
 	protected function _get(string $table, string $where = '', array $values = [], bool $fetchall = true, string $orderby = '', string $del_rule = '' ): array {
 		$substr = substr($where, 0, 1);
 		if ($substr == '(') { // the first char is a (
@@ -79,7 +97,27 @@ class Model extends Database {
 	
 	/**
 	 * @return string json_encoded string
+	 * -- add _insertData() -- face out _insert()
 	 */
+	protected function _insertData(string $table, $data ):string {
+		if (empty($data)) {
+			throw new InvalidArgumentException("You cannot insert empty data");
+		}		
+
+		$keys = array_keys($data);
+		$columns = implode(', ', array_map( fn($col)=>"`{$col}`", $keys ));
+
+		// match placeholders
+		$placeholders = implode(', ', array_fill(0, count($keys), '?'));
+
+		$sql = "INSERT INTO `{$table}` ({$columns}) VALUES ({$placeholders}) ";
+
+		$pdo = $this->connection();
+		$stmt = $pdo->prepare($sql);
+		$eq = $stmt->execute( array_values($data) );
+		$lastId = $pdo->lastInsertId();
+		return $this->_ms($eq ? false : true, third: $lastId);	
+	}
 	protected function _insert(string $table, string $columns = '', array $values = [] ):string {
 		$ignore = '';
 	    $exp = explode(':', $table);
@@ -97,7 +135,27 @@ class Model extends Database {
     
     /**
      * @return string js-encoded feedback message
+	 * -- add _edit() -- face out _update()
      */
+	protected function _edit(string $table, array $data, array $conditions):string {
+		if (empty($data) || empty($conditions)) {
+			throw new InvalidArgumentException("Data or conditions cannot be empty..!", 1);			
+		}
+
+		// SET clause
+		$setKeys = array_keys($data);
+		$setClause = implode(', ', array_map( fn($col) => " `{$col}` = ? ", $setKeys ));
+
+		//WHERE clause
+		$whereKeys = array_keys($conditions);
+		$whereClause = implode(' AND ', array_map( fn($col) => "`{$col}` = ? ", $whereKeys ) );
+
+		$sql = "UPDATE $table SET {$setClause} WHERE {$whereClause} ";
+		$params = array_merge( array_values($data), array_values($conditions) );
+		$stmt = $this->connection()->prepare($sql);
+		$eq = $stmt->execute($params);
+		return $this->_ms($eq ? false : true, third:$stmt->rowCount() );	
+	}
 	protected function _update(string $table, string $columns = '', string $where = '', array $values = [] ):string {
 		
 		$sql = "UPDATE $table SET {$this->_where($columns, ',')} WHERE {$this->_where($where)}";	
@@ -121,7 +179,7 @@ class Model extends Database {
      * 
      * @return mixed js-encoded feedback message or bool   
 	 */
-	protected function _tables($tablename, $action = 'create') {
+	protected function _tables(string $tablename, $action = 'create') {
 		if ($action == 'delete') {
 			$sql = "DELETE FROM $tablename";
 			$stmt = $this->connection()->prepare($sql);
@@ -147,7 +205,7 @@ class Model extends Database {
 		return false;
 	}
 
-	private function _where($where, $del = 'and', $placeholders = '', $delrule = '') {
+	private function _where(string $where, $del = 'and', $placeholders = '', $delrule = '') {
 		$exp = explode(',', $where);  
 		
 		if (!empty($delrule)) {
@@ -255,7 +313,7 @@ class Model extends Database {
 		return $this->_get('users  ', 'id, user_email', [ $id_email, $id_email ], false, '', 'or' )[1];
 	} 
     /**
-     * @param string message required
+     * @param string $message required
      * @return void
      */
     protected function log(String $message, String $type = 'Other') {  
@@ -558,7 +616,7 @@ protected function EmailByResend(
                         $mail->AddAttachment($file_tmp, $file_name);
                 	} 
                 }
-                
+                 
                 $status = $mail->send() ? 'success' : 'fail'; 
                // $this->_insert("email_logs", "recipient, status, message", [$email_row, $status, $mail->ErrorInfo] );
                 $i++;
