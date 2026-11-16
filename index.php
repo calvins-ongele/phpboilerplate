@@ -35,11 +35,14 @@
     $valid_url = str_replace('www.', '', $_SERVER["HTTP_HOST"]);
 
     if ($valid_url !== 'localhost') { 
-        if (strpos($url, 'www') == false) {
+        if (strpos($url, 'www') === false) {
+             if ($no_security == 'http') {
+                header("Location: http://www." . $valid_url . $_SERVER["REQUEST_URI"], true, 301);
+                 return;
+            }
             header("Location: https://www." . $valid_url . $_SERVER["REQUEST_URI"], true, 301);
-        } else if ($no_security == 'http') {
-            header("Location: http://www." . $valid_url . $_SERVER["REQUEST_URI"], true, 301);
-        }
+            return;
+        } 
     }
 
 
