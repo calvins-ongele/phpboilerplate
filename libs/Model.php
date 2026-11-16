@@ -27,7 +27,7 @@ class Model extends Database {
 		http_response_code($http_response);
 		if (($http_response === 200) && ($error)){
 			http_response_code(400);
-		}
+		}  
 		 
 		return json_encode(array(
 			"error"=> $error == false ? false : true,
@@ -37,18 +37,24 @@ class Model extends Database {
 		
 	}  
 	/**
-	 * @return array 0=rowcount, 1=data
-	 * --recreate as _fetch -- face out _get()
-	 */ 
-	protected function _fetch(string $table, array $conditions = [], string $columns = '*', bool $fetchall = true, string $orderby = '',$del_rule = '' ):array {
+	 * Fetch rows with support for AND grouped OR conditions
+	 * Example: $this->_fetch('users',[status=>1, 'OR'=> ['role'=>'sales', 'role'=>'admin' ] ])
+	 * To avoid duplicate arrays, use indexed arrays for same-column ORs:
+	 * ['status'=>1, 'OR'=>[['role'=>'sales'], ['role'=>'admin']] ]
+	 * @param string $table eg users
+	 * @param array $conditions eg [users => 1]
+	 * @param string $columns default *
+	 * @param bool $fetchall -- fetches single row or multiple
+	 * @param string $orderby -- could be 'order by id desc' or limit 1,20 (pagination)
+	 * @return array [rowcount, data]
+	 */
+	protected function _fetch(string $table, array $conditions = [], string $columns = '*', bool $fetchall = true, string $orderby = '' ):array {
 	
-		$sql = "SELECT * FROM {$columns} FROM `{$table}` ";
+		$sql = "SELECT {$columns} FROM `{$table}` ";
 		$params = [];
 		if (!empty($conditions)) {
-			$keys = array_keys($conditions);
-			$where = implode(' AND ', array_map(fn($col)=>"`{$col}` = ? ", $keys ) );
-			$sql .= " WHERE {$where} ";
-			$params = array_values($conditions);
+			[$whereSql, $params ] = $this->buildWhere($conditions, 'AND');
+			$sql .= " WHERE {$whereSql}";
 		}
 
 		$stmt = $this->connection()->prepare("{$sql} {$orderby} ");
@@ -56,6 +62,10 @@ class Model extends Database {
 
 		return $fetchall ? [$stmt->rowCount(), $stmt->fetchAll()] : [$stmt->rowCount(), $stmt->fetch()];
 	}
+	/**
+	 * @return array 0=rowcount, 1=data
+	 * --recreate as _fetch -- face out _get()
+	 */ 
 	protected function _get(string $table, string $where = '', array $values = [], bool $fetchall = true, string $orderby = '', string $del_rule = '' ): array {
 		$substr = substr($where, 0, 1);
 		if ($substr == '(') { // the first char is a (
@@ -205,6 +215,41 @@ class Model extends Database {
 		return false;
 	}
 
+	/**
+	 * Recursively builds WHERE clauses and collects parameters in exact order
+	 */
+	private function buildWhere(array $conditions, string $glue = 'AND'):array {
+		$clauses = [];
+		$params = [];
+
+		foreach($conditions as $key => $value ) {
+			//case 1: Explicit 'OR' / 'AND' group -> e.g., 'OR' => [...]
+			if (in_array( (string) $key, ['OR', 'AND', true]) && is_array($value) ) {
+				[$nestedSql, $nestedParams ] = $this->buildWhere($value, strtoupper( (string) $key ) );
+				$clauses = "({$nestedSql})";
+				continue;
+			}
+
+			//case 2: index sub-array for duplicate columns -> e.g., [['role'=>'sales'], ['role'=>'admin']]
+			if (is_int($key) && is_array($value) ) {
+				[$nestedSql, $nestedParams ] = $this->buildWhere($value, 'AND' );
+				$clauses[] = $nestedSql;
+				$params = array_merge($params, $nestedParams);
+				continue;
+			}
+
+			//case 3: standard 'column' => 'value' -simple
+			$clauses[] = " {$key} = ? ";
+			$params[] = $value;
+		}
+
+		return [ implode(" {$glue}, $clauses"), $params ];
+
+	}
+
+	/**
+	 * face out when _get() is out, replaced with buildWhere()
+	 */
 	private function _where(string $where, $del = 'and', $placeholders = '', $delrule = '') {
 		$exp = explode(',', $where);  
 		
