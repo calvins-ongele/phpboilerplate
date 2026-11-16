@@ -1,7 +1,7 @@
 <!--Header Nav-->
 		<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <div class="container-fluid">
-				<a class="navbar-brand text-md-center" href="/admin"><?php echo $this->_company['c_name'] ?></a>
+				<a class="navbar-brand text-md-center" href="/admin"><?php echo $this->_settings['site_name'] ?></a>
 				<button class="btn btn-link btn-sm mr-auto" id="sidebarToggle" href="#">
 					<div class="lines">
                         <span></span>

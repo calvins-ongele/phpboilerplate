@@ -21,7 +21,11 @@ class Blog_Model extends Model
 	    }
 	    
 	    
-	    return $this->_get("blog left join blog_categories on blog_category_fk = bc_ID  order by blog_ID desc {$this->pagination()} ") ;
+		$blog = $this->_fetch("blog left join blog_categories on blog_category_fk = bc_ID ", [], '*', 1, " {$this->pagination()} ");
+		return [
+			'data'=>$blog[1],
+			'count'=>$this->_fetch("blog", [], '*', 1 )[0]
+		]; 
 	}
 	public function getblogcategories($categ = '') { 
 	    

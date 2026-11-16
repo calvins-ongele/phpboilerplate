@@ -49,8 +49,8 @@ class Model extends Database {
 	 * @return array [rowcount, data]
 	 */
 	protected function _fetch(string $table, array $conditions = [], string $columns = '*', bool $fetchall = true, string $orderby = '' ):array {
-	
-		$sql = "SELECT {$columns} FROM `{$table}` ";
+	  
+		$sql = "SELECT {$columns} FROM {$table} "; 
 		$params = [];
 		if (!empty($conditions)) {
 			[$whereSql, $params ] = $this->buildWhere($conditions, 'AND');
@@ -109,7 +109,7 @@ class Model extends Database {
 	 * @return string json_encoded string
 	 * -- add _insertData() -- face out _insert()
 	 */
-	protected function _insertData(string $table, $data ):string {
+	protected function _insertData(string $table, array $data ):string {
 		if (empty($data)) {
 			throw new InvalidArgumentException("You cannot insert empty data");
 		}		
@@ -222,15 +222,21 @@ class Model extends Database {
 		$clauses = [];
 		$params = [];
 
+		//prevent sql injections
+		$allowedOperators = ['=', '!=', '<>', '>', '<', '>=', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS', 'IS NOT' ]; 
+
 		foreach($conditions as $key => $value ) {
+			$upperKey = strtoupper((trim((string) $key )));
+
 			//case 1: Explicit 'OR' / 'AND' group -> e.g., 'OR' => [...]
-			if (in_array( (string) $key, ['OR', 'AND', true]) && is_array($value) ) {
-				[$nestedSql, $nestedParams ] = $this->buildWhere($value, strtoupper( (string) $key ) );
+			if (in_array( $upperKey, ['OR', 'AND', true]) && is_array($value) ) {
+				[$nestedSql, $nestedParams ] = $this->buildWhere($value, $upperKey );
 				$clauses = "({$nestedSql})";
+				$params = array_merge($params, $nestedParams);
 				continue;
 			}
 
-			//case 2: index sub-array for duplicate columns -> e.g., [['role'=>'sales'], ['role'=>'admin']]
+			//case 2: indexed sub-array for duplicate columns -> e.g., [['role'=>'sales'], ['role'=>'admin']]
 			if (is_int($key) && is_array($value) ) {
 				[$nestedSql, $nestedParams ] = $this->buildWhere($value, 'AND' );
 				$clauses[] = $nestedSql;
@@ -238,12 +244,42 @@ class Model extends Database {
 				continue;
 			}
 
-			//case 3: standard 'column' => 'value' -simple
-			$clauses[] = " {$key} = ? ";
-			$params[] = $value;
-		}
+			//3. parse column and operator -- supports both age > nad age => ['>', 20]
+			$column = trim((string) $key );
+			$operator = '=';
+			$operand = $value;
+			
+			if (is_array($value) && (count($value)===2) && isset($value[0]) && is_string($value($value[0])) ) {
+				$operator = strtoupper(trim($value[0]));
+				$operand = $value[1] ?? '';
+			} else if (preg_match('/^([a-zA-Z0-9_]+)\s+(.+)$/', $column, $matches)) {
+				$column = $matches[1];
+				$operator = strtoupper(trim($matches[2]??''));
+			}
 
-		return [ implode(" {$glue}, $clauses"), $params ];
+			if (!in_array($operator, $allowedOperators, true)) {
+				throw new InvalidArgumentException("Unsupported SQL operator, $operator");
+			}
+
+			// 4. build sql clause based on operator type
+			if (in_array($operator, ['IN', 'NOT IN'], true) && ($operand === null) ) {
+				if (!is_array($operand) || empty($operand) ) {
+					throw new InvalidArgumentException("{$operator} requires a non empty array");
+				}
+				$placeholders = implode(', ', array_fill(0, count($operand), '?') );
+				$clauses[] = "`{$column}` {$operator} ({$placeholders}) ";
+				$params = array_merge($params, array_values($operand)); 
+				
+			} else if ( in_array($operator, ['IS', 'IS NOT'], true) && ($operand === null)  ) {
+				//is null, is not null
+				$clauses[] = "`{$column}` {$operator} NULL ";
+			} else {
+				$clauses[] = "`{$column}` {$operator} ?";
+				$params[] = $operand;
+			} 
+		}
+ 
+		return [implode(" {$glue} ", $clauses), $params ];
 
 	}
 

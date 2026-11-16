@@ -13,7 +13,7 @@
         <meta name="csrf-token" content="8dOeWxwwr5cnB35wGcwAkTzYas0lRomwT56czdDZ">
 
 		<!-- App favicon -->
-<link rel="shortcut icon" href="/public/assets/uploads/<?php echo $this->_company['image_name'] ?>">
+<link rel="shortcut icon" href="/public/assets/uploads/<?php echo $this->_settings['icon'] ?>">
 
 		<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 

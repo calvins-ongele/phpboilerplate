@@ -27,7 +27,7 @@
         
         <div class='container'>
             <div class='row'>
-                <?php foreach($this->blog[1] as $row) { ?>
+                <?php foreach($this->blog['data'] as $row) { ?>
                 <div class='col-md-4'>
                     <div class='alert card'>
                         <img class='card-img-top' src='/<?= UPLOADS?>/<?= $row['blog_image'] ?>'>
@@ -42,25 +42,8 @@
                 
                 
                 
-                     <div class="clearfix <?php echo empty($this->blog[0]) ? "hidden" : ""; ?>">
-                        <ul class="pagination table-responsive">
-                            <li class="page-item">
-                                <?php $pg = '';  ?>
-                                <a href='/blog/?pg=<?= $this->currentpage > 1 ? $this->currentpage - 1 : 1; ?>' class="page-link">Previous</a>
-                            </li>
-                            <?php  
-                                   
-                                for($currentPage = 1; $currentPage <= ceil($this->blog[0] / $this->_company['user_loop_sequence']); $currentPage++){
-                                    echo"
-                                    <li class='page-item'><a href='/blog/?pg=$currentPage' class='page-link'> $currentPage </a></li>";
-                                }
-                            
-                                if ( ceil($this->blog[0] / $this->_company['user_loop_sequence']) > ($_GET['pg'] ??1) )  { 
-                            ?>
-                            
-                            <li class="page-item"><a href='/blog/?pg=<?= $this->currentpage + 1; ?>' class="page-link ">Next</a></li>
-                            <?php } ?>
-                        </ul>
+                     <div class="clearfix  ">
+                        <?= CustomFunctions::paginate($this->blog['data'], $this->blog['count'], $this->_settings['user_loop_sequence'] ) ?>
                     </div>
                
            

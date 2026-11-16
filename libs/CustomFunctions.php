@@ -665,6 +665,15 @@ public static function mainTemplate() {
         </html>
     ";
 }
+/**
+ * alternative to calling the file public.sections.paginate.php directly
+ */
+public static function paginate(array $paginationData, int $paginationDataCount, $loopSequence = 24) {
+    ob_start();
+    require 'public/sections/pagination.section.php';
+    $html = ob_get_clean();
+    return $html;
+}
 	 
  
     

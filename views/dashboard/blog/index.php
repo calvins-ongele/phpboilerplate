@@ -58,12 +58,12 @@
                             </li>
                             <?php  
                                    
-                                for($currentPage = 1; $currentPage <= ceil($this->data[0] / $this->_company['user_loop_sequence']); $currentPage++){
+                                for($currentPage = 1; $currentPage <= ceil($this->data[0] / $this->_settings['user_loop_sequence']); $currentPage++){
                                     echo"
                                     <li class='page-item'><a href='/$pg/blog/?pg=$currentPage' class='page-link'> $currentPage </a></li>";
                                 }
                             
-                                if ( (ceil($this->data[0] / $this->_company['user_loop_sequence'])) > ($_GET['pg'] ?? 1) )  {  
+                                if ( (ceil($this->data[0] / $this->_settings['user_loop_sequence'])) > ($_GET['pg'] ?? 1) )  {  
                             ?>
                             
                             <li class="page-item"><a href='/<?= $pg ?>/blog/?pg=<?= $this->currentpage + 1; ?>' class="page-link ">Next</a></li>
