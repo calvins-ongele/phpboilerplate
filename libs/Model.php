@@ -43,12 +43,12 @@ class Model extends Database {
 	 * ['status'=>1, 'OR'=>[['role'=>'sales'], ['role'=>'admin']] ]
 	 * @param string $table eg users
 	 * @param array $conditions eg [users => 1]
-	 * @param string $columns default *
 	 * @param bool $fetchall -- fetches single row or multiple
+	 * @param string $columns default *
 	 * @param string $orderby -- could be 'order by id desc' or limit 1,20 (pagination)
 	 * @return array [rowcount, data]
 	 */
-	protected function _fetch(string $table, array $conditions = [], string $columns = '*', bool $fetchall = true, string $orderby = '' ):array {
+	protected function _fetch(string $table, array $conditions = [], bool $fetchall = true, string $columns = '*', string $orderby = '' ):array {
 	  
 		$sql = "SELECT {$columns} FROM {$table} "; 
 		$params = [];
@@ -157,11 +157,10 @@ class Model extends Database {
 		$setClause = implode(', ', array_map( fn($col) => " `{$col}` = ? ", $setKeys ));
 
 		//WHERE clause
-		$whereKeys = array_keys($conditions);
-		$whereClause = implode(' AND ', array_map( fn($col) => "`{$col}` = ? ", $whereKeys ) );
+		[$whereSql, $whereParams ] = $this->buildWhere($conditions);
 
-		$sql = "UPDATE $table SET {$setClause} WHERE {$whereClause} ";
-		$params = array_merge( array_values($data), array_values($conditions) );
+		$sql = "UPDATE {$table} SET {$setClause} WHERE {$whereSql} ";
+		$params = array_merge( array_values($data), array_values($whereParams) );
 		$stmt = $this->connection()->prepare($sql);
 		$eq = $stmt->execute($params);
 		return $this->_ms($eq ? false : true, third:$stmt->rowCount() );	
@@ -177,12 +176,17 @@ class Model extends Database {
     /**
      * @return string js-encoded feedback message
      */
-	protected function _delete(string $table, string $where, $values = []):string {
+	protected function _delete(string $table, array $conditions ):string {
+		if (empty($conditions)) {
+			throw new InvalidArgumentException("Error Processing Request", 1);
+			
+		}
+		[$whereSql,  $params ] = $this->buildWhere($conditions);
 	
-		$sql = "DELETE FROM $table WHERE {$this->_where($where)}";
+		$sql = "DELETE FROM $table WHERE {$whereSql}";
 		$stmt = $this->connection()->prepare($sql);
-		$eq = ($stmt->execute($values ));
-		return $this->_ms($eq ? false : true);
+		$eq = ($stmt->execute( $params));
+		return $this->_ms($eq ? false : true, third: $stmt->rowCount() );
 	}
 	/**
 	 * @param string $action  either create, delete or drop
@@ -217,6 +221,9 @@ class Model extends Database {
 
 	/**
 	 * Recursively builds WHERE clauses and collects parameters in exact order
+	 * Supports two use cases
+	 * 1. Key suffix syntax eg 'age'=?20 or 'name' LIKE => '%John%'
+	 * 2. Array value syntax eg 'role' => ['IN', ['sales', 'admin']] or 'deleted_at' => ['IS', null ]
 	 */
 	private function buildWhere(array $conditions, string $glue = 'AND'):array {
 		$clauses = [];
@@ -372,7 +379,7 @@ class Model extends Database {
 	protected function rememberUser(int $userId, string $key) {
 		$expiry = time() * (REMEMBER_COOKIE_EXPIRY_DAYS * 86400);
 
-		$this->_delete('remember_keys', 'usr_id', [$userId]);
+		$this->_delete('remember_keys',  ['usr_id'=>$userId]);
 
 		$this->_insert('remember_keys', 'usr_id,usr_key,expiry', [$userId,$key,$expiry ]);
 	}

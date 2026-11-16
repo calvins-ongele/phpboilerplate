@@ -122,7 +122,7 @@ class MyApp_Model extends Model
 
 		if (CustomFunctions::validEmail($_POST['email'])) { 
 			// first delete any previous reset by the user
-            $del = $this->_delete('password_reset', 'reset_email', [ $_POST['email'] ]);
+            $del = $this->_delete('password_reset', ['reset_email'=> $_POST['email'] ]);
               
 			//create required inputs
 			$selector = bin2hex(random_bytes(8));
@@ -196,7 +196,7 @@ class MyApp_Model extends Model
             echo $this->_ms(false, $message);
 
         // delete the row on success
-          $this->_delete('password_reset', 'reset_selector', [ $_POST['selector']  ]);
+          $this->_delete('password_reset', ['reset_selector'=> $_POST['selector']  ]);
         } else echo $this->_ms(true, 'Some error happened during the reset.');
 	} 
     public function new_email_send() {
@@ -301,7 +301,7 @@ class MyApp_Model extends Model
      
     public function deleteticket() {
         
-        echo $this->_delete('contactus', 'id', [$_POST['id']]);
+        echo $this->_delete('contactus', ['id'=>$_POST['id']]);
     } 
     public function closeticket() {
         
@@ -309,7 +309,7 @@ class MyApp_Model extends Model
     } 
     public function del_blog() {
         if ( file_exists(UPLOADS."/{$_POST['img']}")) unlink( UPLOADS."/{$_POST['img']}" ); 
-        echo $this->_delete('blog', 'blog_ID', [$_POST['id']]);
+        echo $this->_delete('blog', ['blog_ID'=>$_POST['id']]);
     } 
     public function manage_blog() { 
         if (empty($_POST['body'])) {
@@ -370,7 +370,7 @@ class MyApp_Model extends Model
         
         else if ($_POST['action'] == 'delete') { //drop
            if ( file_exists(UPLOADS."/{$_POST['img']}")) unlink( UPLOADS."/{$_POST['img']}" ); 
-            echo $this->_delete('blog_categories', 'bc_ID', [$_POST['id']]); 
+            echo $this->_delete('blog_categories', ['bc_ID'=>$_POST['id']]); 
         }
     }
     
@@ -412,10 +412,10 @@ class MyApp_Model extends Model
 	}
 	 
     public function delete_users()  {
-        echo $this->_delete('users', 'id', [$_POST['id']] );
+        echo $this->_delete('users', ['id'=>$_POST['id']] );
     }
     public function dropsubscriber() {
-        echo $this->_delete('subscribers', 's_ID', [$_POST['id']] );
+        echo $this->_delete('subscribers', ['s_ID'=>$_POST['id']] );
     }
 	public function add_users() {
 	    
@@ -621,7 +621,7 @@ class MyApp_Model extends Model
 	public function deluser() {    
         
 
-        echo $this->_delete('users', 'id ', [$_POST['id']]);  
+        echo $this->_delete('users', ['id'=>$_POST['id']]);  
         
         $this->log(Session::get('email') . " deleted a user on " . date('Y-m-d, H:i:s'), 'User Mgt');
     }
@@ -631,7 +631,7 @@ class MyApp_Model extends Model
 	    $file = $this->_get('blog', 'blog_ID', [$_POST['id']], false);
 	    
 	    
-	    echo $this->_delete('blog', 'blog_ID', [$_POST['id']]);
+	    echo $this->_delete('blog', ['blog_ID'=> $_POST['id']]);
 	    
 	    $this->log(Session::get('email')." deleted a blog at " . date('Y-m-d, H:i:s'), 'Company' );
 	    
@@ -683,9 +683,9 @@ class MyApp_Model extends Model
 	}
 	    
 	public function blog_views() {
-	    $view = $this->_get('blog', 'blog_ID', [$_POST['id']], false)[1]['blog_views'];
-	    
-	   echo $this->_update('blog', 'blog_views', 'blog_ID', [ $view + 1, $_POST['id']]);
+	    $view = $this->_fetch('blog', ['blog_ID'=>$_POST['id']], false)[1]['blog_views'];
+	     
+	   echo $this->_edit('blog', ['blog_views'=>($view + 1)], ['blog_ID'=>$_POST['id']]);
 	}
 	
  

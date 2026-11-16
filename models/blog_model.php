@@ -5,9 +5,9 @@ class Blog_Model extends Model
 	public function __construct() {
 		parent::__construct();
 	}
+	 
 	
- 
-	public function getblog($url = '' ) {
+	public function getblog($url = '' ) {  
 	    if (!empty($url)) {
 	        $data = $this->_get('blog left join blog_categories on blog_category_fk = bc_ID   ', 'blog_slug', [$url], 0  )[1];
 	        if (empty($data)) return false;
