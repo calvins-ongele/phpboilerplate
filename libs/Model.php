@@ -44,11 +44,11 @@ class Model extends Database {
 	 * @param string $table eg users
 	 * @param array $conditions eg [users => 1]
 	 * @param bool $fetchall -- fetches single row or multiple
-	 * @param string $columns default *
 	 * @param string $orderby -- could be 'order by id desc' or limit 1,20 (pagination)
+	 * @param string $columns default *
 	 * @return array [rowcount, data]
 	 */
-	protected function _fetch(string $table, array $conditions = [], bool $fetchall = true, string $columns = '*', string $orderby = '' ):array {
+	protected function _fetch(string $table, array $conditions = [], bool $fetchall = true, string $orderby = '', string $columns = '*' ):array {
 	  
 		$sql = "SELECT {$columns} FROM {$table} "; 
 		$params = [];
