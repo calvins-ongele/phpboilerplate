@@ -1,8 +1,7 @@
-<?php
-
-    require __DIR__ . "/vendor/autoload.php";
+<?php 
     ini_set('memory_limit', '512M');
     set_time_limit(300); // ini_set('max_execution_time', '300');
+    require __DIR__ . "/vendor/autoload.php";
 
     //environment variables
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -30,19 +29,17 @@
 
     // Append the requested resource location to the URL   
     $url .= $_SERVER['REQUEST_URI'];
-
-    $no_security = explode(':', $url)[0];
+ 
     $valid_url = str_replace('www.', '', $_SERVER["HTTP_HOST"]);
+    $no_security = explode(':', $url)[0];
+    
 
-    if ($valid_url !== 'localhost') { 
-        if (strpos($url, 'www') === false) {
-             if ($no_security == 'http') {
-                header("Location: http://www." . $valid_url . $_SERVER["REQUEST_URI"], true, 301);
-                 return;
-            }
+    if ($valid_url !== 'localhost') {
+ 
+        if ((strpos($url, 'www') === false) || ($no_security === 'http')) {  
             header("Location: https://www." . $valid_url . $_SERVER["REQUEST_URI"], true, 301);
             return;
-        } 
+        }  
     }
 
 
